@@ -1,0 +1,350 @@
+﻿@model Nop.Plugin.Widgets.SampleRequestForm.Models.SampleRequestFormModel
+@{
+    Layout = "";
+    Html.AddCssFileParts("~/Plugins/Widgets.SampleRequestForm/Content/SampleRequest.css");
+}
+@using Nop.Web.Framework.UI
+<!-- Trigger the modal with a button -->
+<div id="quick_quote_wrapper">
+    <button type="button" class="btn btn-info btn-lg" id="quick_quote_button">Sample Request</button>
+
+    <button type="button" class="btn btn-info btn-lg" id="call_me_button">Ring mig op </button>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Get the modal
+        var modal = document.getElementById('quick_qoute_modal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("quick_quote_button");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        $('#quick_quote_wrapper').on('click', '#quick_quote_button', function () {
+            modal.style.display = "block";
+        });
+
+        $('#quick_qoute_modal').on('click', '.close', function () {
+            modal.style.display = "none";
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    });
+</script>
+
+<script>
+    var AjaxLoaderPlugin = {
+        objectName: false,
+        actionUrl: false,
+        init: function (objectName, actionUrl) {
+            this.objectName = objectName;
+            this.actionUrl = actionUrl;
+        },
+        action: function () {
+            debugger
+            var Id = '@Model.ProductId';
+
+            $('#SampleRequest_Name').valid();
+            $('#SampleRequest_Company').valid();
+            $('#SampleRequest_Email').valid();
+            $('#SampleRequest_PhoneNumber').valid();
+            $('#SampleRequest_Address').valid();
+            $('#SampleRequest_City').valid();
+            $('#SampleRequest_ZipCode').valid();
+            $('#SampleRequest_PotentialOrderQty').valid();
+            $('#SampleRequest_Comments').valid();
+
+            if ($('#SampleRequest_Name').valid() &&
+                $('#SampleRequest_Company').valid() &&
+                $('#SampleRequest_Email').valid() &&
+                $('#SampleRequest_PhoneNumber').valid() &&
+                $('#SampleRequest_Address').valid() &&
+                $('#SampleRequest_City').valid() &&
+                $('#SampleRequest_ZipCode').valid() &&
+                $('#SampleRequest_Comments').valid()&&
+                $('#SampleRequest_PotentialOrderQty').valid()){
+                var QuickQuote =
+                {
+                    "Name": $('#SampleRequest_Name').val(),
+                    "Company": $('#SampleRequest_Company').val(),
+                    "Email": $('#SampleRequest_Email').val(),
+                    "PhoneNumber": $('#SampleRequest_PhoneNumber').val(),
+                    "Address": $('#SampleRequest_Address').val(),
+                    "City": $('#SampleRequest_City').val(),
+                    "ZipCode": $('#SampleRequest_ZipCode').val(),
+                    "PotentialOrderQty": $('#SampleRequest_PotentialOrderQty').val(),
+                    "Comments": $('#SampleRequest_Comments').val(),
+                    "ProductId": Id,
+                }
+
+                var targetDiv = $('#' + this.objectName);
+                var targetPleaseWaitDiv = $('#' + this.objectName + '-please-wait');
+                targetPleaseWaitDiv.show();
+                $.ajax({
+                    cache: false,
+                    url: "/SampleRequestForm/SendSampleRequest",
+                    data: QuickQuote,
+                    type: 'post',
+                    success: function (data) {
+                        if (data.error) {
+                            targetDiv.html(data.error);
+                        }
+                        if (data.html) {
+                            $(".modal-body").empty();
+                            $(".modal-body").html(data.html);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('Failed.');
+                    }
+                });
+            }
+        },
+    };
+    AjaxLoaderPlugin.init("updateTargetId", "@(Url.Action("SendSampleRequest", "WidgetsQuickQuote"))");
+</script>
+
+
+
+<!--Sample request  Modal-->
+<div id="quick_qoute_modal" class="modal" style="display: none;">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Sample Request</h2>
+        </div>
+        <div class="modal-body">
+            <form id="quick_Quote_form1" name="quick_Quote_form">
+                <div class="form-fields">
+                    <div class="inputs">
+                        <label for="SampleRequest_Name">Name</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="First Name" name="SampleRequest_Name" id="SampleRequest_Name" data-val-required="Enter your name" data-val="true" class="contact_tab_fullname review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_Name" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="SampleRequest_Company">Company</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Company" name="SampleRequest_Company" id="SampleRequest_Company" data-val-required="Enter Company" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_Company" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+                    <div class="inputs">
+                        <label for="SampleRequest_Email">Email</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Email" name="SampleRequest_Email" id="SampleRequest_Email" data-val-required="Enter email" data-val-email="Wrong email" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_Email" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="SampleRequest_PhoneNumber">Phone Number</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Phone Number" name="SampleRequest_PhoneNumber" id="SampleRequest_PhoneNumber" data-val-required="Enter phone number" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_PhoneNumber" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="SampleRequest_Address">Address</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Address" name="SampleRequest_Address" id="SampleRequest_Address" data-val-required="Enter address" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_Address" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+                    <div class="inputs">
+                        <label for="SampleRequest_City">City</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="City" name="SampleRequest_City" id="SampleRequest_City" data-val-required="Enter city" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_City" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+                    <div class="inputs">
+                        <label for="SampleRequest_ZipCode">Zip Code</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Zip Code" name="SampleRequest_ZipCode" id="SampleRequest_ZipCode" data-val-required="Enter zip code" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_ZipCode" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="SampleRequest_PotentialOrderQty">Potential Order Qty</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Potential Order Qty" name="SampleRequest_PotentialOrderQty" id="SampleRequest_PotentialOrderQty" data-val-required="Enter potential order qty" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_PotentialOrderQty" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="SampleRequest_Comments">Comments</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Comments" name="SampleRequest_Comments" id="SampleRequest_Comments" data-val-required="Enter comments" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="SampleRequest_Comments" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="updateTargetId-please-wait" class="please-wait-small" style="display:none;"> Please wait</div>
+
+                <div class="buttons">
+                    <input type="button" value="Send Request" class="btn btn-default" onclick="AjaxLoaderPlugin.action()" name="send-email" id="send-contact-us-form1">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@*call me pop up*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Get the modal
+        var modal = document.getElementById('call_me_modal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("call_me_button");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        $('#quick_quote_wrapper').on('click', '#call_me_button', function () {
+            modal.style.display = "block";
+        });
+
+        $('#call_me_modal').on('click', '.close', function () {
+            modal.style.display = "none";
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    });
+</script>
+
+<script>
+    var AjaxLoaderPlugin1 = {
+        objectName: false,
+        actionUrl: false,
+        init: function (objectName, actionUrl) {
+            this.objectName = objectName;
+            this.actionUrl = actionUrl;
+        },
+        action: function () {
+            debugger
+            var Id = '@Model.ProductId';
+
+            $('#CallMe_Name').valid();
+            $('#CallMe_Company').valid();
+            $('#CallMe_Email').valid();
+            $('#CallMe_PhoneNumber').valid();
+
+            if ($('#CallMe_Name').valid() &&
+                $('#CallMe_Company').valid() &&
+                $('#CallMe_Email').valid() &&
+                $('#CallMe_PhoneNumber').valid()){
+                var CallMe =
+                {
+                    "Name": $('#CallMe_Name').val(),
+                    "Company": $('#CallMe_Company').val(),
+                    "Email": $('#CallMe_Email').val(),
+                    "PhoneNumber": $('#CallMe_PhoneNumber').val(),
+                    "ProductId": Id,
+                }
+
+                var targetDiv = $('#' + this.objectName);
+                var targetPleaseWaitDiv = $('#' + this.objectName + '-please-wait');
+                targetPleaseWaitDiv.show();
+                $.ajax({
+                    cache: false,
+                    url: "/SampleRequestForm/CallMeRequest",
+                    data: CallMe,
+                    type: 'post',
+                    success: function (data) {
+                        if (data.error) {
+                            targetDiv.html(data.error);
+                        }
+                        if (data.html) {
+                            $(".modal-body").empty();
+                            $(".modal-body").html(data.html);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('Failed.');
+                    }
+                });
+            }
+        },
+    };
+    AjaxLoaderPlugin1.init("updateTargetId", "@(Url.Action("CallMeRequest", "WidgetsQuickQuote"))");
+</script>
+
+
+
+<!--call me  Modal-->
+<div id="call_me_modal" class="modal" style="display: none;">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Ring mig op </h2>
+        </div>
+        <div class="modal-body">
+            <form id="call_me_form1" name="call_me_form">
+                <div class="form-fields">
+                    <div class="inputs">
+                        <label for="CallMe_Name">Name</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Name" name="CallMe_Name" id="CallMe_Name" data-val-required="Enter your name" data-val="true" class="contact_tab_fullname review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="CallMe_Name" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="CallMe_Company">Company</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Company" name="CallMe_Company" id="CallMe_Company" data-val-required="Enter Company" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="CallMe_Company" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+                    <div class="inputs">
+                        <label for="CallMe_Email">Email</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Email" name="CallMe_Email" id="CallMe_Email" data-val-required="Enter email" data-val-email="Wrong email" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="CallMe_Email" class="field-validation-valid"></span>
+                        </div>
+                    </div>
+
+                    <div class="inputs">
+                        <label for="CallMe_PhoneNumber">Phone Number</label>
+                        <div class="input-feild">
+                            <input type="text" value="" placeholder="Phone Number" name="CallMe_PhoneNumber" id="CallMe_PhoneNumber" data-val-required="Enter phone number" data-val="true" class="contact_tab_email review-title">
+                            <span data-valmsg-replace="true" data-valmsg-for="CallMe_PhoneNumber" class="field-validation-valid"></span>
+                        </div>
+                    </div> 
+                </div>
+
+                <div id="updateTargetId-please-wait" class="please-wait-small" style="display:none;"> Please wait</div>
+
+                <div class="buttons">
+                    <input type="button" value="Submit" class="btn btn-default" onclick="AjaxLoaderPlugin1.action()" name="send-email" id="send-contact-us-form1">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

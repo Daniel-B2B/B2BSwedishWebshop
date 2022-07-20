@@ -1,0 +1,132 @@
+﻿@{
+    Layout = "";
+    Html.SetActiveMenuItemSystemName("FoxNetSoft.TrackingCodeManager.Configure");
+}
+@model FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models.TrackingCodeManagerSettingsModel
+@using System.Web.Mvc.Html
+@using FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models
+@using Nop.Web.Framework
+@using Nop.Web.Framework.UI
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.Configuration.Settings.GeneralCommon")
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#@Html.FieldIdFor(model => model.showDebugInfo)").click(toggleshowDebugInfo);
+            toggleshowDebugInfo();
+        });
+
+        function toggleshowDebugInfo() {
+            if ($('#@Html.FieldIdFor(model => model.showDebugInfo)').is(':checked')) {
+                $('#pnlclearlogfile, #pnlgetlogfile').show();
+            }
+            else {
+                $('#pnlclearlogfile, #pnlgetlogfile').hide();
+            }
+        }
+    </script>
+    <div class="content">
+        <div class="form-horizontal">
+            @Html.ValidationSummary(false)
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <p>
+                            @if (Model.IsRegisted == true)
+                            {
+                                @T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.IsRegisted")
+                            }
+                            else
+                            {
+                                @T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.IsNoRegisted")
+                                <br />
+                                    <a href="https://www.foxnetsoft.com/noptrackingcodemanager" target="blank">Buy It Now</a>
+                            }
+                        </p>
+                        <p>
+                            <div id="pnlcreatesampledata">
+                                <a href="@Url.Action("CreateSampleData")" class="k-button">@T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.CreateSampleData")</a>
+                            </div>
+                            <div id="pnlcleardata">
+                                <a href="@Url.Action("ClearData")" class="k-button">@T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.CreateData")</a>
+                            </div>
+                        </p>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.Enable)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopEditorFor(model => model.Enable)
+                                @Html.ValidationMessageFor(model => model.Enable)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.IncludingTax)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopEditorFor(model => model.IncludingTax)
+                                @Html.ValidationMessageFor(model => model.IncludingTax)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.showDebugInfo)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.showDebugInfo)
+                                @Html.ValidationMessageFor(model => model.showDebugInfo)
+                                <div id="pnlclearlogfile">
+                                    <a href="@Url.Action("ClearLogFile")" class="k-button">@T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.ClearLogFile")</a>
+                                </div>
+                                <div id="pnlgetlogfile">
+                                    <a href="@Url.Action("GetLogFile")" class="k-button">@T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.GetLogFile")</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.StoreUrl)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopDisplayFor(model => model.StoreUrl)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(m => m.SerialNumber)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopEditorFor(m => m.SerialNumber)
+                                @Html.ValidationMessageFor(m => m.SerialNumber)
+                            </div>
+                        </div>
+                        <p>
+                            Installation and configuring plug-in at Youtube <a href="http://www.youtube.com/foxnetsoft" target="blank">www.youtube.com/foxnetsoft</a>
+                            <br />
+                            Installation and configuring plug-in at our site <a href="https://www.foxnetsoft.com/documentation-noptrackingcodemanager" target="blank">https://www.foxnetsoft.com/documentation-noptrackingcodemanager</a>
+                            <br />
+                            <a href="https://www.foxnetsoft.com" target="blank">www.foxnetsoft.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

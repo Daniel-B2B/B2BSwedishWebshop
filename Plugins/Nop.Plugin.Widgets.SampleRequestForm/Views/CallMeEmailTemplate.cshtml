@@ -1,0 +1,91 @@
+﻿@using Nop.Plugin.Widgets.SampleRequestForm.Models
+@model CallMeModel
+@{
+    Layout = null;
+    var webHelper = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Core.IWebHelper>();
+    var storeUrl = webHelper.GetStoreLocation();
+}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Call Me Request</title>
+    <style type="text/css">
+        <!-- * a {
+            color: #000000;
+            text-decoration: underline;
+        }
+
+            * a:hover {
+                color: #000000;
+                text-decoration: none;
+            }
+        -->
+    </style>
+</head>
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0" bgcolor="#ffffff" style="text-align: left;">
+    <div align="center">
+        <table width="650" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="color:#000000; font-family:Arial, Helvetica, sans-serif;">
+
+            <tbody>
+                <tr align="left">
+
+                    <td valign="top">
+
+                        <table border="0" cellpadding="0" cellspacing="0" width="630" style="margin:0 12px 12px 12px;">
+
+                            <tbody>
+                                <tr>
+
+                                    <td colspan="2" valign="top">
+                                        @if (Model.Name != null)
+                                        {
+                                            <h1 style="color:#000;font-family:Arial, Helvetica, sans-serif;margin: 20px 0 25px 0; font-size:20px; font-style: italic;">Dear @Model.Name,</h1>
+                                        }
+                                        <p style="color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 12px;margin-bottom:35px;">Thank you for submitting a request .One of our sales staff will be in contact with you shortly to discuss your request. </p>
+                                    </td>
+                                </tr>
+                              
+                                <tr>
+                                    <td>
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="264" valign="top">
+                                                        <h1 style="font-weight: bold; margin:0 0 0 0; color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 14px;">Your details</h1>
+                                                        <p style="color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 12px;">Company Name: @Model.Company</p>
+                                                        <p style="color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 12px;">Contact Name : @Model.Name</p>
+                                                        <p style="color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 12px;"> Email: @Model.Email</p>
+                                                        <p style="color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 12px;">Phone Number: @Model.PhoneNumber</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+
+                                    <td colspan="4" valign="top"><hr noshade="noshade" style="margin: 12px 0; border: none; height:2px; background: #000000;" /></td>
+
+                                </tr>
+                                <tr>
+                                    <td width="264" valign="top">
+                                        <p style="color: #000; font-family:Verdana,Geneva,sans-serif; font-size: 14px;"><b>Thank you from B2B Promotions team.</b></p>
+                                        <br />
+                                        <img src="@storeUrl/" />
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>  

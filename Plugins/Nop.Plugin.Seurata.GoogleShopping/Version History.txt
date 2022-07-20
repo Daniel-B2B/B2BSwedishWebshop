@@ -1,0 +1,98 @@
+﻿Version 2.7.0
+- Added Google Express Order Download, DB concurrency fixes & Major changes in scheduler. Scheduler performance optimised.
+
+Version 2.6.5
+- Discounted pricing also getting synced, Invariant culture set for requested json.
+
+Version 2.6.4
+- Multiple warehouse inventory handled.
+
+Version 2.6.3
+- Plugin management will only be available to admins, update to product unpublished/deleted status via DB will be handled.
+
+Version 2.6.2
+- Webhook bug fixes.
+
+Version 2.6.1
+- Fixes for auto sync of variants on product combination update.
+
+Version 2.6.0
+- All sync processs moved to scheduler. Price conversion fixed for some of the countries.
+
+Version 2.5.9
+- Custom Labels logical section added in settings page & minor fixes.
+
+Version 2.5.8
+- Minor enhancements & custom labels added to global settings page.
+
+Version 2.5.7
+- Added extra filter in search, UI enhancements and product id in merchant centre & nop matched.
+
+Version 2.5.6
+- Shipping attribute taken from System keyword.
+
+Version 2.5.5
+- Added shipping attributes to feed (Height, Width, Length, Weight).
+
+Version 2.5.4
+- Products auto sync on update error fixes.
+
+Version 2.5.3
+- Fixes for product url with multi language enabled.
+
+Version 2.5.2
+- Fixes for picture stored in DB causing error while generating products.
+
+Version 2.5.1
+- Picture url used from file system, as dynamic remarketing was getting disapproved by using watermarked pics.
+
+Version 2.5.0
+- Major changes, fixes related to multistore with changes in inventory sync scheduler.
+
+Version 2.4.8
+- Fixes related to SEO title and description data.
+
+Version 2.4.7
+- Multi Store related configuration & scheduler fixes.
+
+Version 2.4.6
+- Deleted products won't show up. Plugin un-installation error fix.
+
+Version 2.4.5
+- Minor fixes related to refresh on publish.
+
+Version 2.4.4
+- Product Name, SE Name & Description also made localized.
+
+Version 2.4.3
+- Product urls will get generated according to selected language & scheduler bug fix.
+
+Version 2.4.2
+- Product Category & manufacturer dropdown error fixes in excel.
+
+Version 2.4.1
+- Product Category & manufacturer dropdown added with excel import/export.
+
+Version 2.4.0
+- Major fixes for multi store, excel import & export optimized with performance related fixes.  
+
+Version 2.3.2
+- Feed exporting issue fixes.
+
+Version 2.3.1
+- Feeds sync changed to batch sync.
+
+Version 2.3.0
+- Generating feeds sync performance optimized.
+
+Version 2.2.0
+- Multi store view option added for shipping & Tax with major bug fixes.
+
+Version 2.1.0
+- Export Feed bug fixes with other sync fixes.
+
+Version 2.0.0
+- Major changes related to performance.
+
+Version 1.0.0
+- This plugin helps nop products get into your Google Merchant account.

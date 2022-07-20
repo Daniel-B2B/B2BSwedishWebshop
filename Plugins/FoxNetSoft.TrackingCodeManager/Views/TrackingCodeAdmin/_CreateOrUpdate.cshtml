@@ -1,0 +1,218 @@
+@model FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models.TrackingCodeModel
+@using FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models
+@using Nop.Web.Framework
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.Id)
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.TypeTag)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopDisplayFor(model => model.TypeTag)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.Name)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(x => x.Name)
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.StoreId)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopDropDownListFor(model => model.StoreId, Model.AvailableStores)
+                            @Html.ValidationMessageFor(model => model.StoreId)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.Published)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(x => x.Published)
+                            @Html.ValidationMessageFor(model => model.Published)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.DisplayOrder)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(x => x.DisplayOrder)
+                            @Html.ValidationMessageFor(model => model.DisplayOrder)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.MerchantId)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(x => x.MerchantId)
+                            @Html.ValidationMessageFor(model => model.MerchantId)
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.ProductKey)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopDropDownListFor(model => model.ProductKey, Model.AvailableProductKeys)
+                                @Html.ValidationMessageFor(model => model.ProductKey)
+                            </div>
+                        </div>
+                    @if (!Model.HideSelectedPageTypeIds)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.SelectedPageTypeIds)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.EditorFor(model => model.SelectedPageTypeIds, new { SelectList = Model.AvailablePageTypes })
+                                <script>
+                                    $(document).ready(function () {
+                                        var pageTypeIdsInput = $('#@Html.FieldIdFor(model => model.SelectedPageTypeIds)').data("kendoMultiSelect");
+                                        pageTypeIdsInput.setOptions({
+                                            autoClose: false
+                                        });
+
+                                        @if (Model.AvailablePageTypes.Count == 0)
+                                    {
+                                        <text>
+                                        pageTypeIdsInput.setOptions({
+                                            enable: false,
+                                            placeholder: 'No page types available'
+                                        });
+                                        pageTypeIdsInput._placeholder();
+                                        pageTypeIdsInput._enable();
+                                        </text>
+                                    }
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.HideTrackingScript)
+                    {
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.HideTrackingScript)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopEditorFor(x => x.HideTrackingScript)
+                                @Html.ValidationMessageFor(model => model.HideTrackingScript)
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $("#@Html.FieldIdFor(model => model.HideTrackingScript)").click(toggleHideTrackingScript);
+                                toggleHideTrackingScript();
+                            });
+
+                            function toggleHideTrackingScript() {
+                                if ($('#@Html.FieldIdFor(model => model.HideTrackingScript)').is(':checked')) {
+                                    $('.pnltrackingscript').hide();
+                                }
+                                else {
+                                    $('.pnltrackingscript').show();
+                                }
+                            }
+                        </script>
+                    }
+                    <div class="form-group pnltrackingscript">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.TrackingScriptBeforeEndHead)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopTextAreaFor(model => model.TrackingScriptBeforeEndHead, new { style = "Height: 300px;" })
+                            @Html.ValidationMessageFor(model => model.TrackingScriptBeforeEndHead)
+                        </div>
+                    </div>
+                    <div class="form-group pnltrackingscript">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.TrackingScriptAfterStartBody)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopTextAreaFor(model => model.TrackingScriptAfterStartBody, new { style = "Height: 300px;" })
+                            @Html.ValidationMessageFor(model => model.TrackingScriptAfterStartBody)
+                        </div>
+                    </div>
+                    <div class="form-group pnltrackingscript">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.TrackingScriptBeforeEndBody)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopTextAreaFor(model => model.TrackingScriptBeforeEndBody, new { style = "Height: 300px;" })
+                            @Html.ValidationMessageFor(model => model.TrackingScriptBeforeEndBody)
+                        </div>
+                    </div>
+                    <div class="form-group pnltrackingscript">
+                        <div class="col-md-3">
+                            <br />
+                        </div>
+                        <div class="col-md-9">
+                            <p>
+                                You can use next tokens:<br />
+                                <strong>%MerchantId%</strong>    - MerchantId<br />
+                                <strong>{GOOGLEID}</strong>    - MerchantId<br />
+                                <strong>%OrderTotal%</strong>  - Order Total<br />
+                                <strong>%NetProfit%</strong>  - Order Total – combined product cost – taxes - shipping<br />
+                                <strong>%OrderTaxTotal%</strong>  - Order TAX Total<br />
+                                <strong>%OrderShippingTotalInclTax%</strong>  - Order Shipping Total Include Tax<br />
+                                <strong>%OrderShippingTotalExclTax%</strong>  - Order Shipping Total Exclude Tax<br />
+                                <strong>%OrderId%</strong>  - Order ID<br />
+                                <strong>%UniqueUserId%</strong>  - Unique user id<br />
+                                <strong>%CustomerEmail%</strong>  - buyer email address<br />
+                                <strong>%ProductId%</strong>  - the first product ID from the order or ID of the product on product page<br />
+                                <strong>%ProductIds%</strong>  - the comma separated list of product Ids from customer's order<br />
+                                <strong>%ProductPrice%</strong>  - price of the product on page of the product<br />
+                                <strong>%Quantity%</strong>  - quantity for the first product from the order<br />
+                                <strong>%Currency%</strong>  - currency code from the order<br />
+                                <strong>%PageType%</strong>  - type of pages, ex. cart, wishlist, search, product, category, manufacturer, vendor, ordercompleted, homepage, completeregistration, initiatecheckout, news, blog, article, anotherpage, etc.<br />
+                                <strong>%EstimatedDeliveryDate%</strong>  - estimated delivery date for customer's order<br />
+                                <strong>%DeliveryCountryCode%</strong>  - delivery country code for customer's order<br />
+                                @if (Model.TypeTag.Equals("Google Dynamic Remarketing", System.StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    <text>
+                                        <strong>%TEMPLATE_DYNAMIC_CODE%</strong>  -special token for Google Dynamic Remarketing<br />
+                                    </text>
+                                }
+                                @if (Model.TypeTag.Equals("Facebook Pixel", System.StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    <text>
+                                        <strong>%TEMPLATE_DYNAMIC_CODE%</strong>  -special token for Facebook Pixel<br />
+                                    </text>
+                                }
+                                @if (Model.TypeTag.Equals("Google Analytics", System.StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    <text>
+                                        <strong>%TEMPLATE_DYNAMIC_CODE%</strong>  - special token for Order Completed page<br />
+                                    </text>
+                                }
+                                @if (Model.TypeTag.Equals("Google Universal Analytics", System.StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    <text>
+                                        <strong>%TEMPLATE_DYNAMIC_CODE%</strong>  - special token fo Order Completed page<br />
+                                    </text>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

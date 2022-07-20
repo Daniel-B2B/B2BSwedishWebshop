@@ -1,0 +1,207 @@
+﻿<Language Name="English" IsRightToLeft="false">
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.IsRegisted">
+    <Value>Registered version.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.IsNoRegisted">
+    <Value>Unregistered version, plugin has 15 days trial period.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.IsExpired">
+    <Value>Your license has expired, you should renew the license with a 50% discount.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.StoreUrl">
+    <Value>Website address (for registration)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.StoreUrl.Hint">
+    <Value>Website address (for registration).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.showDebugInfo">
+    <Value>Enable Debugging</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.showDebugInfo.Hint">
+    <Value>Write debugging information into file. In ~/App_Data/ folder.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.Enable">
+    <Value>Enable plugin</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.Enable.Hint">
+    <Value>Enable plugin.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.IncludingTax">
+    <Value>Include tax</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.IncludingTax.Hint">
+    <Value>Check to include tax when generating tracking code for order items.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.SerialNumber">
+    <Value>Serial number</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.SerialNumber.Hint">
+    <Value>Serial number.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.CreateSampleData">
+    <Value>Create sample data</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.CreateData">
+    <Value>Clear all tracking codes</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.ClearLogFile">
+    <Value>Clear the log-file</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Settings.GetLogFile">
+    <Value>Download the log-file</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.List.Store">
+    <Value>Store</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.List.Store.Hint">
+    <Value>Search by a specific store.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.List.Manage">
+    <Value>Manage Tracking Codes</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.List.Name">
+    <Value>Name</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.List.TypeTag">
+    <Value>Type</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.List.Store">
+    <Value>Store</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.List.Published">
+    <Value>Published</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.List.DisplayOrder">
+    <Value>Display order</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.AddNewFromTemplate">
+    <Value>Add new using Template</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Added">
+    <Value>New tracking code has been added successfully.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Updated">
+    <Value>Tracking code has been updated successfully.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Deleted">
+    <Value>Tracking code has been deleted successfully.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.ActivityLog.Add">
+    <Value>Added tracking code ('{0}')</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.ActivityLog.Edit">
+    <Value>Edited tracking code ('{0}')</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.ActivityLog.Delete">
+    <Value>Deleted tracking code ('{0}')</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.AddNew">
+    <Value>Add new tracking code</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Edit">
+    <Value>Edit tracking code</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.BackToList">
+    <Value>Back to list of tracking code</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TypeTag">
+    <Value>Type of Tag (tracking code)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TypeTag.Hint">
+    <Value>Type of Tag (tracking code).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Name">
+    <Value>Name</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Name.Hint">
+    <Value>The name of tracking code.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Name.Required">
+    <Value>Please enter a name of tracking code.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TrackingScriptBeforeEndHead">
+    <Value>Tracking code script (before end of tag '&lt;/HEAD&gt;')</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TrackingScriptBeforeEndHead.Hint">
+    <Value>Paste your tracking code script for before end of tag '&lt;/HEAD&gt;' here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TrackingScriptAfterStartBody">
+    <Value>Tracking code script (after tag '&lt;BODY&gt;')</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TrackingScriptAfterStartBody.Hint">
+    <Value>Paste your tracking code script for after tag '&lt;BODY&gt;' here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TrackingScriptBeforeEndBody">
+    <Value>Tracking code script (before end of tag '&lt;BODY&gt;')</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TrackingScriptBeforeEndBody.Hint">
+    <Value>Paste your tracking code script for before end of tag '&lt;BODY&gt;' here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Store">
+    <Value>Store</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Store.Hint">
+    <Value>The Store name.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TypeTag">
+    <Value>Type of tag (tracking code)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.TypeTag.Hint">
+    <Value>Select type of tag (tracking code) from the list.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.MerchantId">
+    <Value>Merchant Id</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.MerchantId.Hint">
+    <Value>This 'Merchant Id' uses for mapping token '@MerchantId'.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.DisplayOrder">
+    <Value>Display order</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.DisplayOrder.Hint">
+    <Value>The tracking script display order. 1 represents the first item in the list.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Published">
+    <Value>Published</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.Published.Hint">
+    <Value>Check to publish this tracking code (visible in store). Uncheck to unpublish (tracking code not available in store).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.IncludeInPages">
+    <Value>Include in pages</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.IncludeInPages.Hint">
+    <Value>Include tracking code script in pages.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.ProductKey">
+    <Value>Product key</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.Fields.ProductKey.Hint">
+    <Value>Select Product key.</Value>
+  </LocaleResource>
+  <LocaleResource Name="enums.FoxNetSoft.Plugin.Misc.TrackingCodeManager.ProductKey.Id">
+    <Value>Id</Value>
+  </LocaleResource>
+  <LocaleResource Name="enums.FoxNetSoft.Plugin.Misc.TrackingCodeManager.ProductKey.Sku">
+    <Value>Sku</Value>
+  </LocaleResource>
+  <LocaleResource Name="enums.FoxNetSoft.Plugin.Misc.TrackingCodeManager.ProductKey.Gtin">
+    <Value>Gtin</Value>
+  </LocaleResource>
+  <LocaleResource Name="enums.FoxNetSoft.Plugin.Misc.TrackingCodeManager.ProductKey.ManufacturerPartNumber">
+    <Value>ManufacturerPartNumber</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Menu.Brand">
+    <Value>FoxNetSoft</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Menu.Name">
+    <Value>Tracking Code Manager</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Menu.List">
+    <Value>List</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.Menu.Configure">
+    <Value>Configure</Value>
+  </LocaleResource>
+</Language>
+

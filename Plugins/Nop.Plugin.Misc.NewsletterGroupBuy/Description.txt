@@ -1,0 +1,9 @@
+﻿Group: Misc
+FriendlyName: Newsletter Group Buy
+SystemName: Misc.NewsletterGroupBuy
+Version: 1.00
+SupportedVersions: 3.90
+Author: Akiko Team
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.NewsletterGroupBuy.dll
+Description: This plugin allows to subscribe newletter.

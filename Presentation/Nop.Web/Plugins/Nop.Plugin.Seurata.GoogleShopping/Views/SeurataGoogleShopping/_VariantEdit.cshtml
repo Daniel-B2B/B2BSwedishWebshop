@@ -1,0 +1,751 @@
+﻿@using Nop.Plugin.Seurata.GoogleShopping.Models;
+@using Nop.Plugin.Seurata.GoogleShopping.Domain;
+@model SeurataGoogleShoppingProductModel
+@using Nop.Plugin.Seurata.GoogleShopping.Constants;
+
+@{
+    Html.ViewData.TemplateInfo.HtmlFieldPrefix = "Variant";
+}
+
+@using Nop.Web.Framework;
+
+@using (Html.BeginForm("VariantEdit", "SeurataGoogleShopping", FormMethod.Post, new { id = "shoppingFeedVariant-form" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ProductId)
+    @Html.HiddenFor(model => model.StoreId)
+    @Html.HiddenFor(model => model.NameSelectionType)
+    @Html.HiddenFor(model => model.DescriptionSelectionType)
+    @Html.AntiForgeryToken()
+
+    <div class="edit-save-btn">
+        <button type="submit" name="save" title="Variant will be saved." class="btn bg-blue">
+            <i class="fa fa-floppy-o"></i>
+            @T("Admin.Common.Save")
+        </button>
+
+        <button type="submit" name="save-publish" data-var-id="@Model.Id" title="Variant will be published to google merchant center." id="pub-var-modal" data-request-url="@Url.Action("PublishFeed", "SeurataGoogleShopping")" class="btn bg-blue">
+            <i class="fa fa-cloud-upload"></i>
+            @T("Plugins.Seurata.GoogleShopping.SavePublishSingle")
+        </button>
+
+        @if (Model.StatusId == (int)FeedStatus.Pending || Model.StatusId == (int)FeedStatus.Processing || Model.StatusId == (int)FeedStatus.Published || Model.StatusId == (int)FeedStatus.Disapproved)
+        {
+            <button type="button" name="unpublish" data-var-id="@Model.Id" title="Variant will be deleted from google merchant center(If, it was Published earlier)." id="unpub-var-modal" data-request-url="@Url.Action("UnpublishFeed", "SeurataGoogleShopping")" class="btn bg-red">
+                <i class="fa fa-eye-slash"></i>
+                @T("Plugins.Seurata.GoogleShopping.Product.Unpublish")
+            </button>
+        }
+    </div>
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body rmv-btm-b">
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <img src="@Model.ImageUrl" class="product-img" />
+                        <p>
+                            <a href="~/Admin/Product/Edit/@Model.ProductId" style="margin-top:2%" class="btn btn-default" role="button" target="_blank">Edit product</a>
+                            @if (Model.PublishedOnce)
+                            {
+                                <a href='@Model.ViewInMerchantCenterLink' style="margin-top:2%" class="btn btn-default" target='_blank'>View in Merchant Center</a>
+                            }
+                        </p>
+                    </div>
+                    <div class="col-sm-8 productinfo">
+                        <div class="col-sm-12">
+                            <div class="new-item">
+                                @if (Model.StatusId == (int)FeedStatus.Published)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;background: green;color: white;" class="grid-report-item">@Model.Status</span></small>
+                                }
+                                else if (Model.StatusId == (int)FeedStatus.Disapproved)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;background:#a90c0c;color: white;" class="grid-report-item">@Model.Status</span></small>
+                                }
+                                else if (Model.StatusId == (int)FeedStatus.Unpublished)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;background:#d4cfcf;color:white;" class="grid-report-item">@Model.Status</span></small>
+                                }
+                                else if (Model.StatusId == (int)FeedStatus.Processing)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;" class="grid-report-item blue">@Model.Status</span></small>
+                                }
+                                else if (Model.StatusId == (int)FeedStatus.New)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;background: black;color:white;" class="grid-report-item">@Model.Status</span></small>
+                                }
+                                else if (Model.StatusId == (int)FeedStatus.Imported)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;background:#c8c8ca;color:black;" class="grid-report-item">@Model.Status</span></small>
+                                }
+                                else if (Model.StatusId == (int)FeedStatus.Pending)
+                                {
+                                    @:<small><span style="margin-top: 5px; display: inline-block;background:#4bafc7;color:white;" class="grid-report-item">Awaiting Sync</span></small>
+                                }
+                            </div>
+                        </div>
+                        <div class="innerlist">
+                            <div class="checkbox inline-checkbox">
+                                <label class="first-label">
+                                    <input type="radio" name="vnameselectiontype" value="Name" @if (Model.NameSelectionType == SyncMessages.DEFAULT_TITLE_SYNCTYPE_NAME) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.Name)) { <text> disabled="disabled" </text> }>
+                                    @Html.NopLabelFor(model => model.Name)
+                                </label>
+                            </div>
+                            <div class="checkbox inline-checkbox">
+                                <label>
+                                    <input type="radio" name="vnameselectiontype" value="SEName" @if (Model.NameSelectionType == SyncMessages.DEFAULT_TITLE_SYNCTYPE_SE_NAME) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.SEName)) { <text> disabled="disabled" </text> }>
+                                    @Html.NopLabelFor(model => model.SEName)
+                                </label>
+                            </div>
+                            <div class="checkbox inline-checkbox">
+                                <label>
+                                    <input type="radio" name="vnameselectiontype" value="CustomName" @if (Model.NameSelectionType == SyncMessages.DEFAULT_TITLE_SYNCTYPE_CUSTOM_NAME) { <text> checked="checked" </text> }>
+                                    <div class="label-wrapper"><label class="control-label" for="Variant_CustomName" title="">Custom Name <span class="red-req hide-div" id="cust_name_req-var">*</span></label></div>
+                                </label>
+                            </div>
+                            <div>
+                                <label id="Variant_Name" class="label-f-oride">@Model.Name</label>
+                                <label id="Variant_SEName" class="label-f-oride">@Model.SEName</label>
+                                @Html.EditorFor(model => model.CustomName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.CustomName)
+                                <h6 class="pull-right char-count-msg" id="Variant_CustomName_valtn"></h6>
+                            </div>
+                        </div>
+                        <div class="innerlist">
+                            <div class="checkbox inline-checkbox">
+                                <label class="first-label">
+                                    <input type="radio" name="vdescselectiontype" value="Description" @if (Model.DescriptionSelectionType == SyncMessages.DEFAULT_DESC_SYNCTYPE_DECSRIPTION) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.Description)) { <text> disabled="disabled" </text> }>
+                                    @Html.NopLabelFor(model => model.Description)
+                                </label>
+                            </div>
+                            <div class="checkbox inline-checkbox">
+                                <label>
+                                    <input type="radio" name="vdescselectiontype" value="SEDescription" @if (Model.DescriptionSelectionType == SyncMessages.DEFAULT_DESC_SYNCTYPE_SE_DECSRIPTION) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.SEDescription)) { <text> disabled="disabled" </text> }>
+                                    @Html.NopLabelFor(model => model.SEDescription)
+                                </label>
+                            </div>
+                            <div class="checkbox inline-checkbox">
+                                <label>
+                                    <input type="radio" name="vdescselectiontype" value="CustomDescription" @if (Model.DescriptionSelectionType == SyncMessages.DEFAULT_DESC_SYNCTYPE_CUSTOM_DECSRIPTION) { <text> checked="checked" </text> }>
+                                    <div class="label-wrapper"><label class="control-label" for="Variant_CustomDescription" title="">Custom Description <span class="red-req hide-div" id="cust_desc_req-var">*</span></label></div>
+                                </label>
+                            </div>
+                            <div>
+                                <label id="Variant_Description" class="label-f-oride">@Model.Description</label>
+                                <label id="Variant_SEDescription" class="label-f-oride">@Model.SEDescription</label>
+                                @Html.TextAreaFor(model => model.CustomDescription, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CustomDescription)
+                                <h6 class="pull-right char-count-msg" id="Variant_CustomDescription_valtn"></h6>
+                            </div>
+                        </div>
+
+                        <div class="innerlist">
+                            <label class="control-label" for="Variant_ProductCategory" title="">Variant Category</label>
+                            @Html.DropDownListFor(model => model.CategoryStatusId, Model.AvailableCategories, new { @class = "form-control" })
+                        </div>
+
+                        <div class="innerlist">
+                            <label class="control-label" for="Variant_Manufacturer" title="">Variant Manufacturer</label>
+                            @Html.DropDownListFor(model => model.ManufacturerStatusId, Model.AvailableManufacturers, new { @class = "form-control" })
+                        </div>
+
+                        <div class="innerlist">
+                            @Html.NopLabelFor(model => model.Price)
+                            @Html.NopDisplayFor(model => model.Price)
+                        </div>
+
+                        <div class="innerlist">
+                            @Html.NopLabelFor(model => model.Sku)
+                            @Html.NopDisplayFor(model => model.Sku)
+                        </div>
+
+                        @if (Model.HasErrorList)
+                        {
+                            <div class="innerlist">
+                                <a href="javascript:void(0)" onclick="OpenErrorListModalPopupVariant('@Model.GoogleProductId')">View Issue(s)</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">@T("Plugins.Seurata.GoogleShopping.Products.StockAvailability")</p>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                @if (Model.StockAvailabilityStatusId == (int)FeedAvailability.InStock)
+                                {
+                                    <div class="innerlist innerlist-label-wrapper">
+                                        <small><span style="margin-top: 5px; display: inline-block;background: #ffffff;color:green;border: 1px solid green;" id="var_stockAvl" class="grid-report-item">@Model.StockAvailabilityStatus</span></small>
+                                    </div>
+                                }
+                                else if (Model.StockAvailabilityStatusId == (int)FeedAvailability.OutOfStock)
+                                {
+                                    <div class="innerlist innerlist-label-wrapper">
+                                        <small><span style="margin-top: 5px; display: inline-block;background: #ffffff;color:#a90c0c;border: 1px solid #a90c0c;" id="var_stockAvl" class="grid-report-item">@Model.StockAvailabilityStatus</span></small>
+                                    </div>
+                                }
+                                else if (Model.StockAvailabilityStatusId == (int)FeedAvailability.Preorder)
+                                {
+                                    <div class="innerlist innerlist-label-wrapper">
+                                        <small><span style="margin-top: 5px; display: inline-block;background: #ffffff;color:black;border: 1px solid black;" id="var_stockAvl" class="grid-report-item">@Model.StockAvailabilityStatus</span></small>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-sm-3">
+                                @if (Model.StockAvailabilityStatusId == (int)FeedAvailability.Preorder)
+                                {
+                                    if (Model.PreOrderStartDate.HasValue)
+                                    {
+                                        <div class="innerlist">
+                                            @Html.NopLabelFor(model => model.PreOrderStartDate)
+                                            @Html.NopDisplayFor(model => model.PreOrderStartDate)
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Sale Pricing</p>
+                        <p>If your product is on<b> Sale</b>(discounted), then you can also mention the <b>Start date</b> along with <b>Sale Price</b> (If date is not mentioned then Sale Price always applies).</p>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.IsOnSale)
+                                    @Html.NopEditorFor(model => model.IsOnSale)
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group" id="vsalepricediv" style="display:@(Model.IsOnSale ? "" : "none")">
+                                    @Html.NopLabelFor(model => model.SalePrice)
+                                    @Html.NopDisplayFor(model => model.SalePrice)
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group" id="vsalepricestartdiv" style="display:@(Model.IsOnSale ? "" : "none")">
+                                    @Html.NopLabelFor(model => model.SaleStartDate)
+                                    @Html.NopEditorFor(model => model.SaleStartDate)
+                                    @Html.ValidationMessageFor(model => model.SaleStartDate)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Custom Pricing</p>
+                        <p>Set custom pricing for you product feed. Submit an amount that will match the price on your landing page.</p>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.EnableCustomPrice)
+                                    @Html.NopEditorFor(model => model.EnableCustomPrice)
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group" id="custompricediv" style="display:@(Model.EnableCustomPrice ? "" : "none")">
+                                    @Html.NopLabelFor(model => model.CustomPrice)
+                                    @Html.NopEditorFor(model => model.CustomPrice)
+                                    @Html.ValidationMessageFor(model => model.CustomPrice)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Google Product Category</p>
+                        <p>Select the closest match for your product from Google's list of valid product categories and include either the full path of the category or the numerical category ID</p>
+                        <p><b>Required</b> for <b>Apparel & Accessories (166), Media (783), and Software (2092)</b> categories.</p>
+                        <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="gcat-more-var">more</a>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            @Html.NopLabelFor(model => model.GoogleCategory)
+
+                            <input type="text" class="form-control" id="search-category-name-variant" autocomplete="off" placeholder="Search Google Category By Name or Category Id" />
+                            <span id="search-category-friendly-name-variant"></span>
+                            <button type="button" id="search-category-clear-variant" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                            @Html.NopEditorFor(model => model.GoogleCategory)
+
+                            @if (!string.IsNullOrEmpty(Model.GoogleCategory))
+                            {
+                                <text>
+                                    <script>
+                                            $('#search-category-friendly-name-variant').text('@Html.Raw(Model.GoogleCategory)');
+                                            $('#search-category-clear-variant').show();
+                                    </script>
+                                </text>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Specifications</p>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.Color)
+                                    @Html.EditorFor(model => model.Color, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_Color_valtn"></h6>
+                                    <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="spec-color-instr-var">Instructions</a>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.Size)
+                                    @Html.EditorFor(model => model.Size, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_Size_valtn"></h6>
+                                    <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="spec-size-instr-var">Instructions</a>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.Pattern)
+                                    @Html.EditorFor(model => model.Pattern, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_Pattern_valtn"></h6>
+                                    <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="spec-pttrn-instr-var">Instructions</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Listing details</p>
+                        <p>Provide Google Merchant Center specific attributes for this product.</p>
+                        <p><b>MPN required</b> (Only if your new product does not have a manufacturer assigned GTIN)</p>
+                        <p><b>GTIN required </b>(For all new products with a GTIN assigned by the manufacturer)</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.ManufacturerPartNumber)
+                                    @Html.EditorFor(model => model.ManufacturerPartNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_ManufacturerPartNumber_valtn"></h6>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Condition <span class="red-req">*</span></label>
+                                    @Html.DropDownListFor(model => model.ConditionStatusId, Model.AvailableGoogleConditions, "Select", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ConditionStatusId)
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.Gtin)
+                                    @Html.EditorFor(model => model.Gtin, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_Gtin_valtn"></h6>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Gender</label>
+                                    @Html.NopDropDownListFor(model => model.GenderStatusId, Model.AvailableGoogleGenders)
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="control-label">Age group</label>
+                                    @Html.NopDropDownListFor(model => model.AgeGroupStatusId, Model.AvailableGoogleAgeGroups)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">If this is custom or unique product</label>
+                                    <p>
+                                        @Html.NopEditorFor(model => model.IsIdentifierExist) <span>Tell Google to ignore product identifiers</span><br />
+                                        <span class="custom-prod-ident">This product does not have an MPN or a unique product identifier (UPC, ISBN, EAN, JAN) set as a variant barcode.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Shopping Campaign details</p>
+                        <p>Label that you assign to a product to help organize bidding and reporting in Shopping campaigns</p>
+                        <p>Use a value that you'll recognize in your Shopping campaign. The value won't be shown to users who see your ads</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="row ">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.CustomLabel0)
+                                    @Html.EditorFor(model => model.CustomLabel0, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_CustomLabel0_valtn"></h6>
+                                </div>
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.CustomLabel2)
+                                    @Html.EditorFor(model => model.CustomLabel2, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_CustomLabel2_valtn"></h6>
+                                </div>
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.CustomLabel4)
+                                    @Html.EditorFor(model => model.CustomLabel4, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_CustomLabel4_valtn"></h6>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.CustomLabel1)
+                                    @Html.EditorFor(model => model.CustomLabel1, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_CustomLabel1_valtn"></h6>
+                                </div>
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.CustomLabel3)
+                                    @Html.EditorFor(model => model.CustomLabel3, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_CustomLabel3_valtn"></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-section">
+                    <div class="col-sm-4">
+                        <p class="product-title">Shipping</p>
+                        <p>Label that you assign to a product to help assign correct shipping costs in Merchant Center account settings</p>
+                        <p>
+                            Use a value that you'll recognize in your account shipping settings. The value won't be shown to users who see your ads.
+                            Examples:
+                            Sameday,
+                            Oversize,
+                            Only FedEx.
+                        </p>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="row ">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @Html.NopLabelFor(model => model.ShippingLabel)
+                                    @Html.EditorFor(model => model.ShippingLabel, new { htmlAttributes = new { @class = "form-control" } })
+                                    <h6 class="pull-right char-count-msg" id="Variant_ShippingLabel_valtn"></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    var titleSize_var =
+        "<p><b>Size </b>required for all <b>apparel items</b> in the <b>Apparel & Accessories > Clothing and Apparel & Accessories > Shoes</b> product categories targeting <b>Brazil, France, Germany, Japan, the UK, and the US</b> as well as all products available in different sizes.</p>" +
+        "<p><ul><li>If sizes contain multiple dimensions, condense them into 1 value. For example, '16 / 34 Tall' for neck size 16 inches, sleeve length 34 inches, and “Tall” fit</li>" +
+        "<li>If your item is one size fits all or one size fits most, you can use one size, OS, one size fits all, OSFA, one size fits most, or OSFM</li>" +
+        "</ul></p>";
+
+    var titleColor_var =
+        "<p><b>Color </b>required for all apparel items in feeds that target <b>Brazil, France, Germany, Japan, the UK, and the US</b> as well as all products available in different colors.</p>" +
+        "<p><ul><li>Don’t use a number such as 0 2 4 6 8</li>" +
+        "<li>Don’t use characters that aren’t alphanumeric such as #fff000</li>" +
+        "<li>Don’t use only 1 letter such as R (For Chinese, Japanese, or Korean languages, you can include a single character such as 红)</li>" +
+        "<li>Don’t reference the product or image such as “see image”</li>" +
+        "<li>Don't combine several color names into 1 word instead of separating them with a / such as RedPinkBlue</li>" +
+        "<li>Don’t use a value that isn’t a color such as multicolor, various, variety, men's, women's, or N/A</li>" +
+        "</ul></p>";
+
+    var titleCat_var =
+        "<p>Alcoholic beverages must be submitted with one of these categories: " +
+        "<ul><li><b>Food, Beverages & Tobacco > Beverages > Alcoholic Beverages (499676)</b> , or any of its subcategories </li>" +
+        "<li><b> Arts & Entertainment > Hobbies & Creative Arts > Homebrewing & Winemaking Supplies(3577)</b >, or any of its subcategories.</li></ul></p>" +
+        "<p>Mobile devices sold with contract must be submitted as: <ul><li><b>Electronics > Communications > Telephony > Mobile Phones (267)</b> for phones. </li> " + "<li><b>Electronics > Computers > Tablet Computers (4745)</b> for tablets.</li></ul></p>" +
+        "<p>Gift Cards must be submitted as <b>Arts & Entertainment > Party & Celebration > Gift Giving > Gift Cards & Certificates (53)</b></p>";
+
+    var var_titlePattern = "<p><b>Pattern </b>required if relevant for distinguishing different products in a set of variants.</p>";
+
+    $(document).ready(function () {
+                            $.validator.unobtrusive.parse("#shoppingFeedVariant-form");
+                                                HideAllVarRButtons();
+                                                $('#search-category-clear-variant').click(function () {
+                                                    $('#@Html.FieldIdFor(model => model.GoogleCategory)').val('');
+                                                    $('#search-category-friendly-name-variant').text('');
+                                                    $('#search-category-clear-variant').hide();
+                                                    return false;
+                                                });
+                                                $('#Variant_IsOnSale').change(function () {
+                                                    if ($(this).is(':checked')) {
+                                                        $("#vsalepricediv").show();
+                                                        $("#vsalepricestartdiv").show();
+                                                    }
+                                                    else {
+                                                        $("#vsalepricediv").hide();
+                                                        $("#vsalepricestartdiv").hide();
+                                                    }
+                                                });
+                                                $('#Variant_EnableCustomPrice').change(function () {
+                                                    if ($(this).is(':checked')) {
+                                                        $("#custompricediv").show();
+                                                    }
+                                                    else {
+                                                        $("#custompricediv").hide();
+                                                    }
+                                                });
+                                                $('input[type=radio][name=vnameselectiontype]').change(function () {
+                                                    var selectedrbVal = $(this).val();
+                                                    $("#Variant_NameSelectionType").val(selectedrbVal);
+                                                    ShowHideVarRButtons(selectedrbVal);
+                                                });
+                                                $('input[type=radio][name=vdescselectiontype]').change(function () {
+                                                    var selectedrbVal = $(this).val();
+                                                    $("#Variant_DescriptionSelectionType").val(selectedrbVal);
+                                                    ShowHideVarRButtons(selectedrbVal);
+                                                });
+                                                var namevradiobtnVal = $('input[name=vnameselectiontype]:checked').val();
+                                                ShowHideVarRButtons(namevradiobtnVal);
+                                                var descvradiobtnVal = $('input[name=vdescselectiontype]:checked').val();
+                                                ShowHideVarRButtons(descvradiobtnVal);
+
+                                                $('#Variant_StockAvailabilityStatusId').change(function () {
+                                                    var selectedText = $('#Variant_StockAvailabilityStatusId :selected').text();
+                                                    $("#var_stockAvl").html(selectedText);
+                                                    if (selectedText === 'In Stock') {
+                                                        $('#var_stockAvl').css('background', '#d6e4e4');
+                                                        $('#var_stockAvl').css('color', 'black');
+                                                    }
+                                                    else {
+
+                                                        $('#var_stockAvl').css('background', '#f1f1f1');
+                                                        $('#var_stockAvl').css('color', '#999999');
+                                                    }
+                                                });
+
+                                                $("#var_change-status-clear").on('click', function () {
+                                                    $("#var_change-status-sel").show();
+                                                    $("#var_change-status-clear").hide();
+                                                    $("#var_changeStockStatus").hide();
+                                                });
+
+        $('#Variant_GoogleCategory').hide();
+        $('#search-category-name-variant').autocomplete({
+                                            delay: 200,
+                                            minLength: 3,
+                                            scroll : true,
+                                            source: '@Url.Action("GoogleCategorySearchAutoComplete", "SeurataGoogleShopping")',
+                                            select: function(event, ui) {
+                                                $('#@Html.FieldIdFor(model => model.GoogleCategory)').val(ui.item.labelValue);
+                                                $('#search-category-friendly-name-variant').text(ui.item.label);
+                                                $('#search-category-clear-variant').show();
+                                                $('#search-category-name-variant').val('');
+                                                return false;
+                                            }
+                                                });
+
+                                                $("#gcat-more-var").hover(
+                                                    function () {
+                                                        SetHoverPopup_var(titleCat_var, 'gcat-more-var');
+                                                    }, function () {
+                                                        $(document).find("div.box").remove();
+                                                    }
+                                                );
+
+                                                $("#spec-color-instr-var").hover(
+                                                    function () {
+                                                        SetHoverPopup_var(titleColor_var, 'spec-color-instr-var');
+                                                    }, function () {
+                                                        $(document).find("div.box").remove();
+                                                    }
+                                                );
+
+                                                $("#spec-size-instr-var").hover(
+                                                    function () {
+                                                        SetHoverPopup_var(titleSize_var, 'spec-size-instr-var');
+                                                    }, function () {
+                                                        $(document).find("div.box").remove();
+                                                    }
+        );
+
+        $("#spec-pttrn-instr-var").hover(
+            function () {
+                SetHoverPopup_var(var_titlePattern, 'spec-pttrn-instr-var');
+            }, function () {
+                $(document).find("div.box").remove();
+            }
+        );
+
+        $('#Variant_CustomLabel0, #Variant_CustomLabel1, #Variant_CustomLabel2, #Variant_CustomLabel3, #Variant_CustomLabel4, #Variant_ShippingLabel, #Variant_ManufacturerPartNumber, #Variant_Gtin, #Variant_Color, #Variant_Size, #Variant_Pattern, #Variant_CustomDescription, #Variant_CustomName').keyup(function () {
+            SetMaxLength_var(this);
+            CheckTextboxCharCount_var(this);
+        });
+
+        $('#unpub-var-modal').on('click', function () {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: $('#unpub-var-modal').data('request-url'),
+                data: { productFeedId: $('#unpub-var-modal').data('var-id'), allVariants: false },
+                success: function (data) {
+                    $('#errorModal').modal('hide');
+                    ShowNotifications(data.Message);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                },
+                traditional: true
+            });
+        });
+
+        //$('#pub-var-modal').on('click', function () {
+        //    $.ajax({
+        //        cache: false,
+        //        type: "POST",
+        //        url: $('#pub-var-modal').data('request-url'),
+        //        data: { productFeedId: $('#pub-var-modal').data('var-id'), allVariants: false },
+        //        success: function (data) {
+        //            $('#errorModal').modal('hide');
+        //            ShowNotifications(data.Message);
+        //        },
+        //        error: function (xhr, ajaxOptions, thrownError) {
+        //        },
+        //        traditional: true
+        //    });
+        //});
+
+        });
+
+    function OpenErrorListModalPopupVariant(googleProductId) {
+        if (googleProductId == '')
+            return false;
+
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: $('#loadVariantsData').data('request-errorpopup'),
+            data: { googleProductId: googleProductId },
+            success: function (data) {
+                if (data !== '') {
+                    $("#modalbodyData").html(data.ErrorListPartialView);
+                    $('#errorModal').modal('show');
+                    $('.modal-title').text('Item Issue(s)');
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+            },
+            traditional: true
+        });
+                                            }
+
+        function HideAllVarRButtons() {
+            $('#Variant_Name').hide();
+            $('#Variant_SEName').hide();
+            $('#Variant_CustomName').hide();
+            $('#Variant_Description').hide();
+            $('#Variant_SEDescription').hide();
+            $('#Variant_CustomDescription').hide();
+        }
+
+        function ShowHideVarRButtons(radiobtnVal) {
+            if (radiobtnVal === '@SyncMessages.DEFAULT_TITLE_SYNCTYPE_NAME') {
+                $('#Variant_Name').show();
+                $('#Variant_SEName').hide();
+                $('#Variant_CustomName').hide();
+                $('#cust_name_req-var').hide();
+                $("#Variant_CustomName").rules("remove", "required");
+            }
+            if (radiobtnVal === '@SyncMessages.DEFAULT_TITLE_SYNCTYPE_SE_NAME') {
+                $('#Variant_SEName').show();
+                $('#Variant_Name').hide();
+                $('#Variant_CustomName').hide();
+                $('#cust_name_req-var').hide();
+                $("#Variant_CustomName").rules("remove", "required");
+            }
+            if (radiobtnVal === '@SyncMessages.DEFAULT_TITLE_SYNCTYPE_CUSTOM_NAME') {
+                $('#Variant_CustomName').show();
+                $('#Variant_CustomName').focus();
+                $('#Variant_Name').hide();
+                $('#Variant_SEName').hide();
+                $('#cust_name_req-var').show();
+                $("#Variant_CustomName").rules("add", {
+                    required: true,
+                    messages: {
+                        required: "Please provide Variant Name",
+                    }
+                });
+            }
+            if (radiobtnVal === '@SyncMessages.DEFAULT_DESC_SYNCTYPE_DECSRIPTION') {
+                $('#Variant_Description').show();
+                $('#Variant_SEDescription').hide();
+                $('#Variant_CustomDescription').hide();
+                $('#cust_desc_req-var').hide();
+                $("#Variant_CustomDescription").rules("remove", "required");
+            }
+            if (radiobtnVal === '@SyncMessages.DEFAULT_DESC_SYNCTYPE_SE_DECSRIPTION') {
+                $('#Variant_SEDescription').show();
+                $('#Variant_Description').hide();
+                $('#Variant_CustomDescription').hide();
+                $('#cust_desc_req-var').hide();
+                $("#Variant_CustomDescription").rules("remove", "required");
+            }
+            if (radiobtnVal === '@SyncMessages.DEFAULT_DESC_SYNCTYPE_CUSTOM_DECSRIPTION') {
+                $('#Variant_CustomDescription').show();
+                $('#Variant_CustomDescription').focus();
+                $('#Variant_Description').hide();
+                $('#Variant_SEDescription').hide();
+                $('#cust_desc_req-var').show();
+                $("#Variant_CustomDescription").rules("add", {
+                    required: true,
+                    messages: {
+                        required: "Please provide Variant Description",
+                    }
+                });
+            }
+            $('#Variant_CustomName').valid();
+            $('#Variant_CustomDescription').valid();
+            $("#shoppingFeedVariant-form").validate();
+        }
+
+        function VariantChangeStockStatus() {
+            $("#var_changeStockStatus").show();
+            $("#var_change-status-sel").hide();
+            $("#var_change-status-clear").show();
+    }
+
+    function SetHoverPopup_var(title, updateHandle) {
+        $('<div/>', {
+            class: 'box'
+        }).html(title).appendTo("#" + updateHandle);
+    }
+
+    function CheckTextboxCharCount_var(handle) {
+        var currentLength = $(handle).val().length;
+        var maxLength = $(handle).data('val-length-max');
+        var keywords_remaining = maxLength - currentLength;
+        var toUpdateDiv = $(handle).attr('id') + "_valtn";
+        if (keywords_remaining < 0) {
+            $('#' + updateHandle).html('<font color="red">' + keywords_remaining + ' characters remaining </font>');
+        }
+        else {
+            $('#' + toUpdateDiv).html(keywords_remaining + ' characters remaining');
+        }
+    }
+
+    function SetMaxLength_var(handle) {
+        var maxLength = $(handle).data('val-length-max');
+        $(handle).attr('maxlength', maxLength);
+    }
+</script>

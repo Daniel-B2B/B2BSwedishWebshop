@@ -1,0 +1,9 @@
+﻿Group: Misc
+FriendlyName: Tier Price Import
+SystemName: Misc.TierPriceImport
+Version: 1.0
+SupportedVersions: 3.90
+Author: Akiko Team
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.TierPriceImport.dll
+Description: Imports Tier Price

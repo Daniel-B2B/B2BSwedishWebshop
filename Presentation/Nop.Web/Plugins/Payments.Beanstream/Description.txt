@@ -1,0 +1,9 @@
+﻿Group: Payment methods
+FriendlyName: Worldline Kortbetaling
+SystemName: Payments.worldline
+Version: 2.01
+SupportedVersions: 3.90
+Author: B2BPromotion
+DisplayOrder: 1
+FileName: Nop.Plugin.Payments.Beanstream.dll
+Description: This updated beanstream plugin allows paying with Worldline - 2022

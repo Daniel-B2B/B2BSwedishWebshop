@@ -1,0 +1,749 @@
+﻿@using Nop.PLugin.Misc.ImportProducts.Models
+@model CustomProductModel
+@{
+    // var defaultGridPageSize = 10;// EngineContext.Current.Resolve<Nop.Core.Domain.Common.AdminAreaSettings>().DefaultGridPageSize;
+    // var gridPageSizes = "10, 25, 50, 100"; //EngineContext.Current.Resolve<Nop.Core.Domain.Common.AdminAreaSettings>().GridPageSizes;
+    ////page title
+    ViewBag.Title = "Products Import Manager";
+    var defaultGridPageSize = 10;
+    var gridPageSizes = "10, 25, 50, 100";
+    Layout = "_AdminLayout.cshtml";
+    //var messages = new List<string>();
+    //if(ViewBag.Messages == null){
+    //    messages = ViewBag.Messages as List<string>;
+    //}
+    //Html.EnableClientValidation(true);
+}
+
+@using (Html.BeginForm())
+{
+
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            Import Products
+        </h1>
+    </div>
+
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="">
+                            <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+                                <i class="fa fa-upload"></i>
+                                @T("Admin.Common.Import")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="panel panel-default">
+                    <div class="panel-body">
+                        @Html.ActionLink("Sync Product", "SyncProducts", "ProductImport", null, new { @class = "btn bg-olive" })
+                    </div>
+                </div>*@
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <a class="btn bg-olive" href="http://b2bpromotion.sourcinguniverse.com/Content/files/B2BProdutctsSample.xlsx"><i class="fa fa-file-excel-o" aria-hidden="true"></i>Sample Excel File</a>
+                        <strong>Download sample product excel file</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="products-grid"></div>
+                    <script type="text/x-kendo-template" id="template">
+                        @*@Html.ActionLink("Sync Products", "SyncProducts", "ProductImport", null, new { @class = "k-button k-button-icontext" })*@
+
+                        <a class="k-button k-button-icontext" href="@Url.Action("SyncProducts", "ProductImport")"><i class="fa fa-refresh"></i>Sync Products</a>
+                        <span><strong>Note:</strong> Please wait till the products are synced.</span>
+                    </script>
+                    <script>
+                            $(document).ready(function() {
+                                $("#products-grid").kendoGrid({
+                                    dataSource: {
+                                        type: "json",
+                                        transport: {
+                                            read: {
+                                                url: "@Html.Raw(Url.Action("ProductList", "ProductImport"))",
+                                                type: "POST",
+                                                dataType: "json",
+                                                //data: additionalData
+                                            }
+                                        },
+                                        schema: {
+                                            data: "Data",
+                                            total: "Total",
+                                            errors: "Errors"
+                                        },
+                                        requestEnd: function (e) {
+                                            if (e.type == "read") {
+                                                var response = e.response;
+                                                if (response) {
+                                                    //store extra data
+                                                    reportAggregates = e.response["ExtraData"];
+                                                }
+                                            }
+                                        },
+                                        error: function (e) {
+                                            display_kendoui_grid_error(e);
+                                            // Cancel the changes
+                                            this.cancelChanges();
+                                        },
+                                        pageSize: @(defaultGridPageSize),
+                                        serverPaging: true,
+                                        serverFiltering: true,
+                                        serverSorting: true
+                                    },
+                                    pageable: {
+                                        refresh: true,
+                                        pageSizes: [@(gridPageSizes)]
+                                    },
+                                    editable: {
+                                        confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                        mode: "inline"
+                                    },
+                                    scrollable: false,
+                                    // toolbar: [{ name: "create", text: "Sync Products" }],
+                                    toolbar: kendo.template($("#template").html()),
+                                    //dataBound: onDataBound,
+                                    columns: [
+                                        {
+                                            field: "ParentSKU",
+                                            title: "ParentSKU"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SKU",
+                                            title: "SKU"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ColorName",
+                                            title: "ColorName"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "InternetName",
+                                            title: "InternetName",
+                                            width: 150
+                                        },
+                                        {
+                                            field: "InternetTxt",
+                                            title: "InternetTxt",
+                                            width: 200
+                                        },
+                                        {
+                                            field: "Q1",
+                                            title: "Q1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "Q2",
+                                            title: "Q2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "Q3",
+                                            title: "Q3"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "Q4",
+                                            title: "Q4"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "Q5",
+                                            title: "Q5"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "Q6",
+                                            title: "Q6"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "P1",
+                                            title: "P1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "P2",
+                                            title: "P2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "P3",
+                                            title: "P3"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "P4",
+                                            title: "P4"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "P5",
+                                            title: "P5"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "P6",
+                                            title: "P6"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "GrossNett",
+                                            title: "GrossNett"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintType_IL1_T1",
+                                            title: "ImprintType_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintDescription_IL1_T1",
+                                            title: "ImprintDescription_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintImage_IL1_T1",
+                                            title: "ImprintImage_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "PriceClass_IL1_T1",
+                                            title: "PriceClass_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "PriceClass_IL1_CN",
+                                            title: "PriceClass_IL1_CN"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SetupFee_IL1_T1",
+                                            title: "SetupFee_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SetupFee_IL1_T1_NextColor",
+                                            title: "SetupFee_IL1_T1_NextColor"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SetupFeeStructure_IL1_T1",
+                                            title: "SetupFeeStructure_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ExcludeFreeSetupCosts_IL1_T1",
+                                            title: "ExcludeFreeSetupCosts_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintSize_IL1_T1",
+                                            title: "ImprintSize_IL1_T1",
+                                            width: 100
+                                        },
+                                    {
+                                            field: "MaxColors_IL1_T1",
+                                            title: "MaxColors_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "Handling_IL1_T1",
+                                            title: "Handling_IL1_T1"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintType_IL1_T2",
+                                            title: "ImprintType_IL1_T2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintLocation_IL1_T2",
+                                            title: "ImprintLocation_IL1_T2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintImage_IL1_T2",
+                                            title: "ImprintImage_IL1_T2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "PriceClass_IL1_T2",
+                                            title: "PriceClass_IL1_T2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "PriceClass_IL1_CN2",
+                                            title: "PriceClass_IL1_CN2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SetupFee_IL1_T2",
+                                            title: "SetupFee_IL1_T2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SetupFee_IL1_NextColor2",
+                                            title: "SetupFee_IL1_NextColor2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "SetupFeeStructure2",
+                                            title: "SetupFeeStructure2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ExcludeFreeSetupCosts2",
+                                            title: "ExcludeFreeSetupCosts2"
+                                            , width: 100
+                                        },
+                                        {
+                                            field: "ImprintSize_IL1_T2",
+                                            title: "ImprintSize_IL1_T2",
+                                        width: 100
+                                    },
+                                    {
+                                        field: "MaxColors_IL1_T2",
+                                        title: "MaxColors_IL1_T2"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Handling_IL1_T2",
+                                        title: "Handling_IL1_T2"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintType_IL1_T3",
+                                        title: "ImprintType_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintLocation_IL1_T3",
+                                        title: "ImprintLocation_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintImage_IL1_T3",
+                                        title: "ImprintImage_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_T3",
+                                        title: "PriceClass_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_CN3",
+                                        title: "PriceClass_IL1_CN3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_T3",
+                                        title: "SetupFee_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_NextColor3",
+                                        title: "SetupFee_IL1_NextColor3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFeeStructure3",
+                                        title: "SetupFeeStructure3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ExcludeFreeSetupCosts3",
+                                        title: "ExcludeFreeSetupCosts3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintSize_IL1_T3",
+                                        title: "ImprintSize_IL1_T3",
+                                         width: 100
+                                    },
+                                    {
+                                        field: "MaxColors_IL1_T3",
+                                        title: "MaxColors_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Handling_IL1_T3",
+                                        title: "Handling_IL1_T3"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintType_IL1_T4",
+                                        title: "ImprintType_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintLocation_IL1_T4",
+                                        title: "ImprintLocation_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintImage_IL1_T4",
+                                        title: "ImprintImage_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_T4",
+                                        title: "PriceClass_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_CN4",
+                                        title: "PriceClass_IL1_CN4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_T4",
+                                        title: "SetupFee_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_NextColor4",
+                                        title: "SetupFee_IL1_NextColor4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFeeStructure4",
+                                        title: "SetupFeeStructure4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ExcludeFreeSetupCosts4",
+                                        title: "ExcludeFreeSetupCosts4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintSize_IL1_T4",
+                                        title: "ImprintSize_IL1_T4",
+                                        width: 100
+                                    },
+                                    {
+                                        field: "MaxColors_IL1_T4",
+                                        title: "MaxColors_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Handling_IL1_T4",
+                                        title: "Handling_IL1_T4"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintType_IL1_T5",
+                                        title: "ImprintType_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintLocation_IL1_T5",
+                                        title: "ImprintLocation_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintImage_IL1_T5",
+                                        title: "ImprintImage_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_T5",
+                                        title: "PriceClass_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_CN5",
+                                        title: "PriceClass_IL1_CN5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_T5",
+                                        title: "SetupFee_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_NextColor5",
+                                        title: "SetupFee_IL1_NextColor5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFeeStructure5",
+                                        title: "SetupFeeStructure5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ExcludeFreeSetupCosts5",
+                                        title: "ExcludeFreeSetupCosts5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintSize_IL1_T5",
+                                        title: "ImprintSize_IL1_T5",
+                                        width: 100
+                                    },
+                                    {
+                                        field: "MaxColors_IL1_T5",
+                                        title: "MaxColors_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Handling_IL1_T5",
+                                        title: "Handling_IL1_T5"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintType_IL1_T6",
+                                        title: "ImprintType_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintLocation_IL1_T6",
+                                        title: "ImprintLocation_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintImage_IL1_T6",
+                                        title: "ImprintImage_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_T6",
+                                        title: "PriceClass_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "PriceClass_IL1_CN6",
+                                        title: "PriceClass_IL1_CN6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_T6",
+                                        title: "SetupFee_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFee_IL1_NextColor6",
+                                        title: "SetupFee_IL1_NextColor6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "SetupFeeStructure6",
+                                        title: "SetupFeeStructure6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ExcludeFreeSetupCosts6",
+                                        title: "ExcludeFreeSetupCosts6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ImprintSize_IL1_T6",
+                                        title: "ImprintSize_IL1_T6",
+                                        width: 100
+                                    },
+                                    {
+                                        field: "MaxColors_IL1_T6",
+                                        title: "MaxColors_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Handling_IL1_T6",
+                                        title: "Handling_IL1_T6"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "IntraCode",
+                                        title: "IntraCode"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "CountryOfOrigin",
+                                        title: "CountryOfOrigin"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "OuterCartonPieces",
+                                        title: "OuterCartonPieces"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "OuterCartonLength",
+                                        title: "OuterCartonLength"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "OuterCartonWidth",
+                                        title: "OuterCartonWidth"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "OuterCartonHeight",
+                                        title: "OuterCartonHeight"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "CommercialItemLength",
+                                        title: "CommercialItemLength"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "CommercialItemWidth",
+                                        title: "CommercialItemWidth"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "CommercialItemHeight",
+                                        title: "CommercialItemHeight"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "CommercialItemWeight",
+                                        title: "CommercialItemWeight",
+                                        width: 100
+                                    },
+                                    {
+                                        field: "Flavours",
+                                        title: "Flavours"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Sizes",
+                                        title: "Sizes"
+                                        , width: 100
+                                    },
+
+                                    {
+                                        field: "WritingColor",
+                                        title: "WritingColor"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "CapacityTxt",
+                                        title: "CapacityTxt"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "OrderUnit",
+                                        title: "OrderUnit"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "MainGroup",
+                                        title: "MainGroup",
+                                        width: 150,
+                                    },
+                                    {
+                                        field: "Material",
+                                        title: "Material"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "BatteryType",
+                                        title: "BatteryType"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "NumberOfBatteries",
+                                        title: "NumberOfBatteries"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "ProductImageURL",
+                                        title: "ProductImageURL",
+                                        width: 150,
+                                    },
+                                    {
+                                        field: "DeliveryTimeMT_IL1_T1",
+                                        title: "DeliveryTimeMT_IL1_T1"
+                                        , width: 100
+                                    },
+                                    {
+                                        field: "Q4_Q_OnPallet",
+                                        title: "Q4_Q_OnPallet"
+                                    }
+
+                                    ],
+                                    dataBound: function (e) {
+                                       
+                                        var cnt = $('#products-grid').data('kendoGrid').dataSource.total();
+                                        if (cnt > 0) {
+                                            $(".k-grid-toolbar").show();
+                                        } else {
+                                            $(".k-grid-toolbar").hide();
+                                        }
+                                        console.log("dataBound");
+                                    }
+
+                                });
+                            });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+@*<div class="content-header clearfix">
+        <div class="pull-right">
+            <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" >
+                <i class="fa fa-upload"></i>
+                Sync Product
+            </button>
+
+        </div>
+    </div>*@
+
+
+@*import products form*@
+<div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+            </div>
+            @using (Html.BeginForm("ImportExcel", "ProductImport", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        @Html.AntiForgeryToken()
+                        <ul class="common-list">
+                            <li>
+                                <em>@T("Admin.Catalog.Products.List.ImportFromExcelTip")</em>
+                            </li>
+                            <li>
+                                <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>
+                            </li>
+                        </ul>
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <div class="label-wrapper">
+                                    <label class="control-label">
+                                        @T("Admin.Common.ExcelFile")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Common.ImportFromExcel")
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

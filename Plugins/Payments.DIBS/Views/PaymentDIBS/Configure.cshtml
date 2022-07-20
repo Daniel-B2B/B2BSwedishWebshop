@@ -1,0 +1,163 @@
+﻿@{
+    Layout = "";
+}
+@model Nop.Plugin.Payments.DIBS.Models.ConfigurationModel
+@using Nop.Web.Framework;
+@using (Html.BeginForm())
+{ @Html.AntiForgeryToken()
+
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="form-group">
+                    <div class="col-md-9">
+                        <b>DIBS Payment plugin information:</b>
+
+                        <br />
+                        <b>Bruges denne betalingsmetode skal din forretning have DKK/SEK/NOK som primær valuta.</b>
+
+                        <br />
+                        <b>DIBS giver dig mulighed for at modtage betalinger med Dankort/VISA/Mastercard, du skal have en aftale med PBS/Nets og DIBS. Læs mere på www.dibs.dk</b>
+                        <br />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <br />
+                        <p>DIBS Payment plugin indstillinger:</p>
+                        <br />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.usesandbox)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.usesandbox)
+                        @Html.ValidationMessageFor(model => model.usesandbox)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.UseAutoCapture)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.UseAutoCapture)
+                        @Html.ValidationMessageFor(model => model.UseAutoCapture)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.MD5Secret)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.TextAreaFor(model => Model.MD5Secret, new { style = "Width: 380px;Height: 30px;" })
+                        @Html.ValidationMessageFor(model => model.MD5Secret)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.MD5Secret2)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.TextAreaFor(model => Model.MD5Secret2, new { style = "Width: 380px;Height: 30px;" })
+                        @Html.ValidationMessageFor(model => model.MD5Secret2)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.Language)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.Language,
+            new SelectList(new[]{
+                new{Text="Dansk", Value="da"},
+                new{Text="Svensk", Value="sv"},
+                 new{Text="Norsk", Value="no"},
+                 new{Text="Finsk", Value="fi"},
+                 new{Text="Engelsk", Value="en"},
+                 }, "Value", "Text"))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.CurrencyCode)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.CurrencyCode,
+            new SelectList(new[]{
+                new{Text="DKK", Value="208"},
+                new{Text="SEK", Value="752"},
+                 new{Text="NOK", Value="578"},
+                 new{Text="EUR", Value="246"},
+                 }, "Value", "Text"))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.MerchantId)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.MerchantId)
+                        @Html.ValidationMessageFor(model => model.MerchantId)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.gatewayURL)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.TextAreaFor(model => Model.gatewayURL, new { style = "Width: 380px;Height: 30px;" })
+                        @Html.ValidationMessageFor(model => model.gatewayURL)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.useAutoUserSettings)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.useAutoUserSettings)
+                        @Html.ValidationMessageFor(model => model.useAutoUserSettings)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.DescriptionText)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.TextAreaFor(model => Model.DescriptionText, new { style = "Width: 600px; Height: 250px;" })
+                        @Html.ValidationMessageFor(model => model.DescriptionText)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.AdditionalFee)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.AdditionalFee)
+                        @Html.ValidationMessageFor(model => model.AdditionalFee)
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.AdditionalFeePercentage)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.AdditionalFeePercentage)
+                        @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        &nbsp;
+                    </div>
+                    <div class="col-md-9">
+                        <input type="submit" name="save" class="btn bg-blue" value="@T("Admin.Common.Save")" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

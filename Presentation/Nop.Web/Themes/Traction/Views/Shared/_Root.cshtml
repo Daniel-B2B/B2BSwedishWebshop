@@ -1,0 +1,146 @@
+﻿@using Nop.Core
+@using Nop.Core.Infrastructure
+@using Nop.Services.Localization
+@using Nop.Web.Framework.Themes
+@using System.Web.Mvc
+
+@{
+    var homePage = String.Empty;
+    var additionalClass = String.Empty;
+    var mainSlider = MvcHtmlString.Empty;
+
+    var controllerName = System.Web.HttpContext.Current.Request.RequestContext.RouteData.GetRequiredString("controller");
+    var isHomePage = controllerName.Equals("home", StringComparison.InvariantCultureIgnoreCase);
+    if (isHomePage)
+    {
+        homePage = "home";
+        mainSlider = @Html.Widget("home_page_main_slider");
+    }
+    
+}
+
+@if (isHomePage && !MvcHtmlString.IsNullOrEmpty(mainSlider))
+{
+    additionalClass = "home-slider";
+}
+
+@using Nop.Web.Models.Catalog;
+@{
+    Layout = "~/Views/Shared/_Root.Head.cshtml";
+}
+
+@Html.Widget("body_start_html_tag_after")
+@Html.Partial("_Notifications")
+@Html.Action("JavaScriptDisabledWarning", "Common")
+@Html.Partial("OldInternetExplorerWarning")
+
+<div class="master-wrapper-page @homePage @additionalClass">
+    @Html.Action("AdminHeaderLinks", "Common")
+    @Html.Partial("Header")
+    <div class="overlayOffCanvas"></div>
+    <div class="responsive-nav-wrapper-parent">
+        <div class="responsive-nav-wrapper">
+            <div class="responsive-nav-inner">
+                @*<div class="personal-button" id="header-links-opener">
+                    <span>@T("SevenSpikes.Themes.Common.Personal")</span>
+                </div>*@
+				<div class="shopping-cart-link">
+					<a href="@Url.RouteUrl("ShoppingCart")">
+						<span>@T("ShoppingCart")</span>
+						<span class="cart-qty" id="shopping-cart-link-count"></span>
+					</a>
+                </div>
+                <div class="menu-title">
+                    <span>@T("SevenSpikes.Themes.Common.MenuTitle")</span>
+                </div>
+                <div class="search-wrap">
+                    <span>@T("Search")</span>
+                </div>
+                <div class="filters-button">
+                    <span>@T("SevenSpikes.Themes.Common.Filters")</span>
+                </div>
+            </div>
+        </div>
+	</div>
+
+    <div class="subheader-wrapper">
+        <div class="header-middle">
+			<!-- TrustBox widget - Micro TrustScore --> 
+			<div class="trustpilot-widget mobile" data-locale="da-DK" data-template-id="5419b637fa0340045cd0c936" data-businessunit-id="5c98be5293a1ae00012c03d0" data-style-height="20px" data-style-width="100%" data-theme="light"> 
+				<a href="https://dk.trustpilot.com/review/b2bpromotion.dk" target="_blank" rel="noopener">Trustpilot</a> 
+			</div> 
+			<!-- End TrustBox widget -->
+		
+			<div class="logo-wrapper">
+				<div class="header-logo">
+					@Html.Action("Logo", "Common")
+				</div>
+			</div>
+			<div class="header-notifications-wrapper">
+				<ul>
+					<li class="icon-phone">
+						<p><a href="/contactus">@T("Header.Notifications.Wrapper.Message1")</a></p>
+					</li>
+					<li class="icon-delivery">
+						<p><a href="/faq">@T("Header.Notifications.Wrapper.Message2")</a></p>
+					</li>
+					<li class="icon-coffee">
+						<p><a href="http://www.b2bpromotion.eu/" target="_blank">@T("Header.Notifications.Wrapper.Message3")</a></p>
+					</li>
+				</ul>
+			</div>
+		</div>
+        <div class="justAFixingDivBefore"></div>
+        <div class="headerMenuParent">
+            <div class="header-menu">
+                <div class="close-menu">
+                    <span>@T("SevenSpikes.Themes.Common.CloseMenu")</span>
+                </div>
+                @{
+                    var menuHtml = Html.Widget("theme_header_menu");
+                }
+                @if (!MvcHtmlString.IsNullOrEmpty(menuHtml))
+                {
+                    @menuHtml
+                }
+                else
+                {
+                    @Html.Action("TopMenu", "Catalog")
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (isHomePage)
+    {
+        @mainSlider
+		
+		<div class="slider-search-wrapper">
+			<div class="store-search-box slider-search">
+				@Html.Action("SearchBox", "Catalog")
+			</div>
+		</div>
+		
+		
+	}
+	
+    <div class="master-wrapper-content">
+        <script type="text/javascript">
+            AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart');
+        </script>
+        @Html.Widget("content_before")
+        @*ajax loading window*@
+        <div class="ajax-loading-block-window" style="display: none">
+            <div class="loading-image">
+            </div>
+        </div>
+        <div class="master-column-wrapper">
+            @RenderBody()
+        </div>
+        @Html.Widget("content_after")
+    </div>
+</div>
+
+@Html.Action("Footer", "Common")
+@Html.Action("EuCookieLaw", "Common")
+@Html.Widget("body_end_html_tag_before")

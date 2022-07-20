@@ -1,0 +1,174 @@
+﻿@using Nop.Plugin.Misc.GroupBuy.Models;
+@using Nop.Web.Framework;
+
+
+@{
+    //var defaultGridPageSize = EngineContext.Current.Resolve<Nop.Core.Domain.Common.AdminAreaSettings>().DefaultGridPageSize;
+    //var gridPageSizes = EngineContext.Current.Resolve<Nop.Core.Domain.Common.AdminAreaSettings>().GridPageSizes;
+
+    //page title
+    ViewBag.Title = "Group Buy Products";
+    //active menu item (system name)
+
+    var defaultGridPageSize = 10;
+    var gridPageSizes = 10;
+    Layout = "_AdminLayout.cshtml";
+}
+
+
+@Html.AntiForgeryToken()
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        Group Buy Products
+    </h1>
+    <div class="pull-right">
+        <a href="@Url.Action("CreateGroupBuyProduct")" class="btn bg-blue">
+            <i class="fa fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+    </div>
+    <div class="pull-right">
+        <div class="btn-group"></div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="groupBuyProduct-grid"></div>
+                    <script>
+                        $(document).ready(function () {
+                            $("#groupBuyProduct-grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("List", "GroupBuyManager"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                        },
+                                        destroy: {
+                                            url: "@Html.Raw(Url.Action("DeleteProductAllDetails", "GroupBuyManager"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: addAntiForgeryToken
+                                        },
+
+                                    },
+
+                                schema: {
+                                    data: "Data",
+                                    total: "Total",
+                                    errors: "Errors",
+                                    model: {
+                                        id: "Id"
+                                    }
+                                },
+                                error: function (e) {
+                                },
+                                pageSize:@(defaultGridPageSize),
+                                servserPaging: true,
+                                serverFiltering: true,
+                                serverSorting: true,
+                            },
+
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [10, 25, 50]
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [{
+                                    field: "Id",
+                                    title: "Id",
+                                    width: 20
+                                }, {
+                                    field: "ProductId",
+                                    title: "Product Id",
+                                    width: 20
+                                }, {
+                                    field: "ProductName",
+                                    title: "Product Name",
+                                    width: 200
+                                }, {
+                                    field: "StartDate",
+                                    title: "Start Date",
+                                    width: 70,
+                                    type: "date",
+                                    format: "{0:G}",
+                                    template: "#= kendo.toString(kendo.parseDate(StartDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                                }, {
+                                    field: "EndDate",
+                                    title: "End Date",
+                                    width: 70,
+                                    type: "date",
+                                    format: "{0:G}",
+                                    template: "#= kendo.toString(kendo.parseDate(EndDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                                },
+                                //{
+                                //    field: "MaxQuantity",
+                                //    title: "Max Order Qunatity",
+                                //    format: "{0:0}",
+                                //    width: 70
+                                //    },
+                                {
+                                    field: "ProductSoldQuantity",
+                                    title: "Sold Qunatity",
+                                    format: "{0:0}",
+                                    width: 70
+                                },
+                                {
+                                    field: "Id",
+                                    title: "@T("Admin.Common.Edit")",
+                                    width: 70,
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                    template: '<a class="btn btn-default" href="EditGroupBuyProduct/#=Id#"><i class="fa fa-pencil"></i>@T("Admin.Common.Edit")</a>'
+                                }, {
+                                    field: "Id",
+                                    title: "Tier Price",
+                                    width: 70,
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                    template: '<a class="btn btn-default" href="TierPrice/#=Id#"><i class="fa fa-eye"></i>@T("Admin.Common.View")</a>'
+                                },
+                                    @*{
+                                    field: "Id",
+                                    title: "@T("Admin.Common.Delete")",
+                                    width: 70,
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                    template: '<a class="btn btn-default" href="DeleteProductAllDetails/#=Id#"><i class="fa fa-trash-o"></i>@T("Admin.Common.Delete")</a>'
+                                    },*@{
+                                        command: [
+                                            {
+                                        name: "destroy",
+                                        text: "@T("Admin.Common.Delete")"
+                                    }
+                                    ],
+                                        width: 70
+                                    },
+
+
+                                    {
+                                    field: "Id",
+                                    title: "Send Email",
+                                    width: 70,
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                        template: '<a class="btn btn-default" href="GroupBuyEmail/#=Id#"><i class="fa fa-trash-o"></i>Send Email</a>'
+                                }
+                                ]
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

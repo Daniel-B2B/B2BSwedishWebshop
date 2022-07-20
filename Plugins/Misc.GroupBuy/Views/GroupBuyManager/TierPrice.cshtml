@@ -1,0 +1,201 @@
+﻿@model Nop.Plugin.Misc.GroupBuy.Models.CustomTierPriceModel
+@using Nop.Web.Framework;
+@{
+    Layout = "_AdminLayout.cshtml";
+    ViewBag.Title = "Manage tier prices";
+    var defaultGridPageSize = 100;
+    var gridPageSizes = 10;
+}
+
+@using (Html.BeginForm("TierPrice", "GroupBuyManager", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="content-header clearfix">
+        <div class="pull-left">
+            <h3>
+                Manage Tier Price
+                <small><i class="fa fa-arrow-circle-left"></i>@Html.ActionLink("back to group buy list", "ManageSellsBasedOnQuantity")</small>
+            </h3>
+        </div>
+        @*<div class="pull-right">
+                <input type="submit" name="save" class="btn bg-blue" value="@T("Admin.Common.Save")" />
+            </div>*@
+
+    </div>
+
+    @Html.HiddenFor(model => model.ProductSellId)
+    @Html.AntiForgeryToken()
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+                <div class="panel panel-default panel-search">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-5">
+
+                                <div class="form-group">
+                                    <div class="col-md-3">
+                                        @Html.NopLabelFor(model => model.ProductSellId)
+
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.DisplayFor(x => x.ProductSellId)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-3">
+                                        @*@Html.NopLabelFor(model => model.Quantity)*@
+                                        <label class="label-wrapper" for="Quantity" title="">Max Quantity</label>
+
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.NopEditorFor(x => x.Quantity)
+                                        @Html.ValidationMessageFor(model => model.Quantity)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-3 offset-md-4">
+                                        <input type="submit" name="save" class="btn bg-blue" value="@T("Admin.Common.Save")" />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+                        <div id="tierPrice-grid"></div>
+
+                        <script>
+                        $(document).ready(function () {
+                            $("#tierPrice-grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("TierPriceList", "GroupBuyManager", new { productSellId = Model.ProductSellId}))",
+                                            type: "POST",
+                                            dataType: "json",
+                                        },
+                                        update: {
+                                    url: "@Html.Raw(Url.Action("UpdateTierPrice", "GroupBuyManager"))",
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: addAntiForgeryToken
+                                },
+                                destroy: {
+                                    url: "@Html.Raw(Url.Action("DeleteTierPrice", "GroupBuyManager"))",
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: addAntiForgeryToken
+                                        },
+
+                                    },
+                                    group: {
+                                        field: "MaxQuantity",
+                                        aggregates: [{
+                                            field: "MaxQuantity",
+                                            aggregate: "count"
+                                        }]
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors: "Errors",
+                                        model: {
+                                            id: "Id",
+                                            fields: {
+                                                //ProductId: { editable: false, type: "number" },
+                                                MaxQuantity: { editable: false, type: "number" },
+                                                Quantity: { editable: false, type: "string" },
+                                                Price: { editable: true, type: "number" },
+                                                Id: { editable: false, type: "number" }
+                                            }
+                                        }
+                                    },
+                                    error: function (e) {
+                                    },
+                                    pageSize:@(defaultGridPageSize),
+                                    servserPaging: true,
+                                    serverFiltering: true,
+                                    serverSorting: true,
+                                },
+
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [10, 25, 50]
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [{
+                                    field: "Id",
+                                    title: "Id",
+                                    width: 150
+
+                                },
+                                    {
+                                        field: "MaxQuantity",
+                                        title: "Max Quantity",
+                                        width: 150
+
+                                    },
+                                    {
+                                        field: "Quantity",
+                                        title: "Quantity",
+                                    width: 150
+
+                                },
+                                {
+                                    field: "Price",
+                                    title: "Price",
+                                    format: "{0:n2}",
+                                    width: 150,
+                                    editor: function (container, options) {
+                                        $('<input name="' + options.field + '"/>')
+                                            .appendTo(container)
+                                            .kendoNumericTextBox({
+                                                format: "{0:n4}",
+                                                decimals: 4
+                                            });
+                                    }
+                                },@*{
+                                    field: "Id",
+                                    title: "@T("Admin.Common.Delete")",
+                                    width: 100,
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                    template: '<a class="btn btn-default" href="/GroupBuyManager/DeleteTierPrice/#=Id#"><i class="fa fa-trash-o"></i>@T("Admin.Common.Delete")</a>'
+                                },*@ {
+                                command: [
+                                    {
+                                        name: "edit",
+                                        text: {
+                                            edit: "@T("Admin.Common.Edit")",
+                                            update: "@T("Admin.Common.Update")",
+                                            cancel: "@T("Admin.Common.Cancel")"
+                                        }
+                                    }, {
+                                        name: "destroy",
+                                        text: "@T("Admin.Common.Delete")"
+                                    }
+                                ],
+                                width: 200
+                            }
+                                ]
+                            });
+                        });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

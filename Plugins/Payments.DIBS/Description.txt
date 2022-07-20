@@ -1,0 +1,9 @@
+Group: Payment methods
+FriendlyName: DIBS Kortbetaling
+SystemName: Payments.DIBS
+Version: 3.92
+SupportedVersions: 3.90
+Author: WeroShop IVS
+DisplayOrder: 1
+FileName: Nop.Plugin.Payments.DIBS.dll
+Description: Dette plugin tillader kortbetaling via DIBS

@@ -1,0 +1,86 @@
+﻿@{
+    //page title
+    //ViewBag.Title = T("Admin.Catalog.Products").Text;
+    //active menu item (system name)
+    var defaultGridPageSize = 10;
+    var gridPageSizes = 10;
+    Layout = "_AdminLayout.cshtml";
+}
+@using Nop.Web.Framework;
+@using Nop.Plugin.Misc.NewsletterGroupBuy.Models
+@Html.AntiForgeryToken()
+
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+       News Letter Group Buy Subscribers
+    </h1>
+</div>
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="testimonial-grid"></div>
+                    <script type="text/x-kendo-template" id="template">
+                        <div class="tabstrip">
+                            <div>
+                                <div class="TestimonialDetails"></div>
+                            </div>
+                            <div>
+                                <div class='employee-details'>
+                                    <ul>
+                                        <li><label>Id:</label>#= Id #</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </script>
+
+                    <script>
+                        $(document).ready(function() {
+                            $("#testimonial-grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("List", "NewslettergroupBuy"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                        },
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors: "Errors"
+                                    },
+                                    error: function(e) {
+                                    },
+                                    pageSize: @(defaultGridPageSize),
+                                    serverPaging: true,
+                                    serverFiltering: true,
+                                    serverSorting: true,
+
+                                },
+
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [10,25,50]
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [{
+                                    field: "Email",
+                                    title: "Email",
+                                }] 
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

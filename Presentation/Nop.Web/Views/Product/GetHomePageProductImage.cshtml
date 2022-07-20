@@ -1,0 +1,15 @@
+﻿@using Nop.Web.Models.Catalog;
+@model HomePageMenuProductViewModel
+@if(Model.CategoryId != 0 && !string.IsNullOrEmpty(@Model.PictureUrl))
+{
+<ul class="submenu-list with-selected-product">
+    <li class="@Model.CategoryId">
+        <div class="picture with-ribben">
+            <div class="ribben">@Model.Price</div>
+            <img src="@Model.PictureUrl" alt="@Model.PictureUrl">
+        </div>
+		<a href="@Model.Seoname" class="buttonstyle">@Model.CustomText @*Schnell Bestellen*@</a>
+        @*<button id="@Model.Seoname" type="button" value="Schnell Bestellen" class="">Schnell Bestellen</button>*@
+    </li>
+</ul>
+}

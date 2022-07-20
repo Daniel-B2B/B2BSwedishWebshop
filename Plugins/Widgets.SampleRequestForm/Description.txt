@@ -1,0 +1,9 @@
+﻿Group: Widgets
+FriendlyName: Sample Request
+SystemName: Widgets.SampleRequestForm
+Version: 1.00
+SupportedVersions: 3.90
+Author: Akiko Team
+DisplayOrder: 1
+FileName: Nop.Plugin.Widgets.SampleRequestForm.dll
+Description: This plugin allows sending sample request.

@@ -1,0 +1,311 @@
+﻿@*@using Nop.PLugin.Misc.ImportProducts.Models*@
+@*@model CustomProductModel*@
+@{
+    // var defaultGridPageSize = 10;// EngineContext.Current.Resolve<Nop.Core.Domain.Common.AdminAreaSettings>().DefaultGridPageSize;
+    // var gridPageSizes = "10, 25, 50, 100"; //EngineContext.Current.Resolve<Nop.Core.Domain.Common.AdminAreaSettings>().GridPageSizes;
+    ////page title
+    ViewBag.Title = "Products Import Manager";
+    var defaultGridPageSize = 10;
+    var gridPageSizes = "10, 25, 50, 100";
+    Layout = "_AdminLayout.cshtml";
+    //var messages = new List<string>();
+    //if(ViewBag.Messages == null){
+    //    messages = ViewBag.Messages as List<string>;
+    //}
+    //Html.EnableClientValidation(true);
+}
+
+@using (Html.BeginForm())
+{
+
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            Price Class
+        </h1>
+    </div>
+
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="products-grid"></div>
+                    <script type="text/x-kendo-template" id="template">
+                        @*@Html.ActionLink("Sync Products", "SyncProducts", "ProductImport", null, new { @class = "k-button k-button-icontext" })*@
+
+                        @*<a class="k-button k-button-icontext" href="@Url.Action("PriceClassList", "PriceClass")"><i class="fa fa-refresh"></i>Sync Products</a>
+                            <span><strong>Note:</strong> Please wait till the products are synced.</span>*@
+                    </script>
+                    <script>
+                            $(document).ready(function() {
+                                $("#products-grid").kendoGrid({
+                                    dataSource: {
+                                        type: "json",
+                                        transport: {
+                                            read: {
+                                                url: "@Html.Raw(Url.Action("PriceClassList", "PriceClass"))",
+                                                type: "POST",
+                                                dataType: "json",
+                                                //data: additionalData
+                                                //data: additionalData
+                                            }
+                                            ,
+                                create: {
+                                    url: "@Html.Raw(Url.Action("PriceClassInsert", "PriceClass"))",
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: addAntiForgeryToken
+                                },
+                                update: {
+                                    url: "@Html.Raw(Url.Action("PriceClassUpdate", "PriceClass"))",
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: addAntiForgeryToken
+                                },
+                                destroy: {
+                                    url: "@Html.Raw(Url.Action("DeletePriceClass", "PriceClass"))",
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: addAntiForgeryToken
+                                }
+                                        },
+                                        schema: {
+                                            data: "Data",
+                                            total: "Total",
+                                            errors: "Errors",
+                                            model: {
+                                                id: "Id",
+                                                fields: {
+                                                    PriceClass: { editable: true, type: "string" },
+                                                    Quantity: { editable: true, type: "number" },
+                                                    Price: { editable: true, type: "number" },
+                                                    Price2: { editable: true, type: "number" },
+                                                    Price3: { editable: true, type: "number" },
+                                                    Price4: { editable: true, type: "number" },
+                                                    Price5: { editable: true, type: "number" },
+                                                    Price6: { editable: true, type: "number" },
+                                                    Price7: { editable: true, type: "number" },
+
+                                                    Id: { editable: false, type: "number" }
+                                                }
+                                            }
+                                        },
+                                        requestEnd: function (e) {
+                                            if (e.type == "create" || e.type == "update") {
+                                                this.read();
+                                            }
+                                        },
+                                        //requestEnd: function (e) {
+                                        //    if (e.type == "read") {
+                                        //        var response = e.response;
+                                        //        if (response) {
+                                        //            //store extra data
+                                        //            reportAggregates = e.response["ExtraData"];
+                                        //        }
+                                        //    }
+                                        //},
+                                        error: function (e) {
+                                            display_kendoui_grid_error(e);
+                                            // Cancel the changes
+                                            this.cancelChanges();
+                                        },
+                                        pageSize: @(defaultGridPageSize),
+                                        serverPaging: true,
+                                        serverFiltering: true,
+                                        serverSorting: true
+                                    },
+                                    pageable: {
+                                        refresh: true,
+                                        numeric: false,
+                                        pageSizes: [@(gridPageSizes)]
+                                    },
+                                      toolbar: [{ name: "create", text: "@T("Admin.Common.AddNewRecord")" }],
+                                    editable: {
+                                        confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                        mode: "inline"
+                                    },
+                                    scrollable: false,
+									filterable: true,
+                                    // toolbar: [{ name: "create", text: "Sync Products" }],
+                                    //toolbar: kendo.template($("#template").html()),
+                                    toolbar: [{ name: "create", text: "@T("Admin.Common.AddNewRecord")" }],
+                                    //dataBound: onDataBound,
+                                    columns: [
+                                        {
+                                            field: "Id",
+                                            title: "Id"
+                                            , width: 100,
+                                            filterable: false
+                                        },
+                                        {
+                                            field: "PriceClass",
+                                            title: "PriceClass"
+                                            , width: 100,
+                                            filterable: false
+											//filterable: {
+           //     multi: true,
+           //     search: true
+           // }
+                                        }
+                                        ,
+                                        {
+                                            field: "Quantity",
+                                            title: "Quantity"
+                                            , width: 100,
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price",
+                                            title: "Price",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price2",
+                                            title: "Price2",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price3",
+                                            title: "Price3",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price4",
+                                            title: "Price4",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price5",
+                                            title: "Price5",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price6",
+                                            title: "Price6",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            field: "Price7",
+                                            title: "Price7",
+                                            format: "{0:n2}",
+                                            width: 100,
+                                            editor: function (container, options) {
+                                                $('<input name="' + options.field + '"/>')
+                                                    .appendTo(container)
+                                                    .kendoNumericTextBox({
+                                                        format: "{0:n2}",
+                                                        decimals: 2
+                                                    });
+                                            },
+											filterable:false
+                                        }
+                                        ,
+                                        {
+                                            command: [
+                                                {
+                                                    name: "edit",
+                                                    text: {
+                                                        edit: "@T("Admin.Common.Edit")",
+                                                        update: "@T("Admin.Common.Update")",
+                                                        cancel: "@T("Admin.Common.Cancel")"
+                                                    }
+                                                }, {
+                                                    name: "destroy",
+                                                    text: "@T("Admin.Common.Delete")"
+                                                }
+                                            ],
+                                            width: 200
+                                        }
+
+                                    ],
+                                    dataBound: function (e) {
+
+                                        var cnt = $('#products-grid').data('kendoGrid').dataSource.total();
+                                        if (cnt > 0) {
+                                            $(".k-grid-toolbar").show();
+                                        } else {
+                                            $(".k-grid-toolbar").hide();
+                                        }
+                                        console.log("dataBound");
+                                    }
+
+                                });
+                            });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}

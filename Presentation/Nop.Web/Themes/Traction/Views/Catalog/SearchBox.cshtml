@@ -1,0 +1,77 @@
+﻿@model SearchBoxModel
+@using Nop.Web.Models.Catalog;
+@{
+
+    var controllerName = System.Web.HttpContext.Current.Request.RequestContext.RouteData.GetRequiredString("controller");
+    var isHomePage = controllerName.Equals("home", StringComparison.InvariantCultureIgnoreCase);
+
+}
+@using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { id = "small-search-box-form" }))
+{
+	if(isHomePage)
+    {
+		<input type="text" class="search-box-text" id="small-searchterms" autocomplete="off" name="q" placeholder="@T("Search.SearchBox.Tooltip")" />
+	}else{
+	 <input type="text" class="search-box-text" id="small-searchterms" autocomplete="off" name="q" placeholder="@T("Search.SearchBox.Tooltip2")" />
+	}
+    @Html.Widget("searchbox_before_search_button")
+    <input type="submit" class="button-1 search-box-button" value="@T("Search.Button")" />
+    if (Model.SearchTermMinimumLength > 0)
+    {
+        <script type="text/javascript">
+            $("#small-search-box-form").submit(function(event) {
+                if ($("#small-searchterms").val() == "") {
+                    alert('@Html.Raw(HttpUtility.JavaScriptStringEncode(T("Search.EnterSearchTerms").Text))');
+                    $("#small-searchterms").focus();
+                    event.preventDefault();
+                }
+            });
+        </script>
+    }
+    if (Model.AutoCompleteEnabled)
+    {
+        <text>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    $('#small-searchterms').autocomplete({
+                            delay: 500,
+                            minLength: @(Model.SearchTermMinimumLength.ToString()),
+                            source: '@(Url.RouteUrl("ProductSearchAutoComplete"))',
+                            appendTo: '.search-box',
+                            select: function(event, ui) {
+                                $("#small-searchterms").val(ui.item.label);
+                                setLocation(ui.item.producturl);
+                                return false;
+                            }
+                        })
+                        .data("ui-autocomplete")._renderItem = function(ul, item) {
+                            var t = item.label;
+                            //html encode
+                            t = htmlEncode(t);
+                            return $("<li></li>")
+                                .data("item.autocomplete", item)
+                                .append("<a>@(Model.ShowProductImagesInSearchAutoComplete ? Html.Raw("<img src='\" + item.productpictureurl + \"'>") : null)<span>" + t + "</span></a>")
+                                .appendTo(ul);
+                        };
+                });			
+				
+            </script>
+        </text>
+    }
+    @Html.Widget("searchbox")
+}
+
+<script>
+					
+var searchPlaceholder = '@T("Search.SearchBox.Tooltip2")';
+//console.log(searchPlaceholder);
+if ($(window).width() < 1000) {
+	$(".home-slider .slider-search-wrapper .store-search-box input.search-box-text").attr("placeholder", searchPlaceholder);
+}
+$(window).on('resize', function() {
+	if ($(window).width() < 1000) {
+		$(".home-slider .slider-search-wrapper .store-search-box input.search-box-text").attr("placeholder", searchPlaceholder);
+	} 
+});
+
+</script>

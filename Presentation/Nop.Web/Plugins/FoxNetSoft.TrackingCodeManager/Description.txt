@@ -1,0 +1,8 @@
+﻿Group: Misc
+FriendlyName: Tracking Code Manager
+SystemName: FoxNetSoft.TrackingCodeManager
+Version: 1.33
+SupportedVersions: 3.90
+Author: FoxNetSoft
+DisplayOrder: 1
+FileName: FoxNetSoft.Plugin.Misc.TrackingCodeManager.dll         

@@ -1,0 +1,9 @@
+﻿Group: Misc
+FriendlyName: Price Class
+SystemName: Misc.ImportPriceClass
+Version: 1.0
+SupportedVersions: 3.90
+Author: Akiko Team
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.ImportPriceClass.dll
+Description: Custom Price class plugin 

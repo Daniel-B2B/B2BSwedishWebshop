@@ -1,0 +1,9 @@
+﻿Group: Misc
+FriendlyName: Group Buy
+SystemName: Misc.GroupBuy
+Version: 1.00
+SupportedVersions: 3.90
+Author: Akiko Team
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.GroupBuy.dll
+Description: Group Buy

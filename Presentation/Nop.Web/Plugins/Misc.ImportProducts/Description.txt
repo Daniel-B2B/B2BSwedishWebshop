@@ -1,0 +1,9 @@
+﻿Group: Misc
+FriendlyName: Custom Product Import
+SystemName: Misc.ImportProducts
+Version: 1.0
+SupportedVersions: 3.90
+Author: Akiko Team
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.ImportProducts.dll
+Description: Imports new products to database

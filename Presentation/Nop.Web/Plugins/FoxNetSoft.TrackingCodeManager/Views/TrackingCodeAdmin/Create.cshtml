@@ -1,0 +1,32 @@
+@model FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models.TrackingCodeModel
+@using FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models    
+@using Nop.Web.Framework
+@using Nop.Web.Framework.UI
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+    //page title
+    ViewBag.Title = @T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.AddNew").Text;
+
+    Html.SetActiveMenuItemSystemName("FoxNetSoft.TrackingCodeManager.List");
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "trackingcode-form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.AddNew")
+            <small><i class="fa fa-arrow-circle-left"></i>@Html.ActionLink(T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.BackToList").Text, "List")</small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+        </div>
+    </div>
+    @Html.Partial(Model.PathToView, Model)
+}

@@ -1,0 +1,241 @@
+﻿@model ProductDetailsModel
+@using Nop.Core.Domain.Seo;
+@using Nop.Core.Infrastructure;
+@using Nop.Web.Models.Catalog;
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    //title
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    //meta
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+    //page class
+    Html.AppendPageCssClassParts("html-product-details-page");
+
+    var seoSettings = EngineContext.Current.Resolve<SeoSettings>();
+    //canonical URL
+    if (seoSettings.CanonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(productUrl);
+    }
+
+    //open graph META tags
+    if (seoSettings.OpenGraphMetaTags)
+    {
+        Html.AddHeadCustomParts("<meta property=\"og:type\" content=\"product\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:title\" content=\"" + Html.Encode(Model.Name) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:description\" content=\"" + Html.Encode(Nop.Core.Html.HtmlHelper.StripTags(Model.MetaDescription)) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:image\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:url\" content=\"" + Request.Url.AbsoluteUri + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"og:site_name\" content=\"" + Html.Encode(Model.CurrentStoreName) + "\" />");
+    }
+
+    //Twitter META tags
+    if (seoSettings.TwitterMetaTags)
+    {
+        Html.AddHeadCustomParts("<meta property=\"twitter:card\" content=\"summary\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:site\" content=\"" + Html.Encode(Model.CurrentStoreName) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:title\" content=\"" + Html.Encode(Model.Name) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:description\" content=\"" + Html.Encode(Nop.Core.Html.HtmlHelper.StripTags(Model.MetaDescription)) + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:image\" content=\"" + Model.DefaultPictureModel.ImageUrl + "\" />");
+        Html.AddHeadCustomParts("<meta property=\"twitter:url\" content=\"" + Request.Url.AbsoluteUri + "\" />");
+    }
+	
+	int maxQuantity = 9999;
+	if(Model.TierPrices.Count()>0){
+		 maxQuantity = Model.TierPrices.Max(x => x.Quantity);
+	}
+	
+	var attributeChangeHandlerFuncName2 = string.Format("attribute_change_handler_{0}", Model.Id);
+	 
+	 var attrCount = Model.ProductAttributes.Count();
+}
+
+@Html.Partial("_ProductBreadcrumb", Model.Breadcrumb)
+
+<div itemscope itemtype="http://schema.org/Product" class="page product-details-page">
+
+@Html.Widget("productdetails_after_breadcrumb", Model.Id)
+    <div class="page-body">
+        @Html.Widget("productdetails_top", Model.Id)
+        @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
+        {
+            <div data-productid="@Model.Id">
+                <div class="product-essential">
+                    @Html.Widget("productdetails_before_pictures", Model.Id)
+
+                    @{
+            var cloudZoom = Html.Widget("sevenspikes_cloud_zoom");
+                    }
+                    @if (!MvcHtmlString.IsNullOrEmpty(cloudZoom))
+                    {
+                        @cloudZoom
+                    }
+                    else
+                    {
+                        <!--product pictures-->
+                        @Html.Partial("_ProductDetailsPictures", Model)
+                    }
+
+                    @Html.Widget("productdetails_after_pictures", Model.Id)
+                    <div class="overview">
+						<div class="product-name">
+							<h1 itemprop="name">
+								@Model.Name
+							</h1>
+							@Html.Widget("productname_bottom", Model.Id)
+						</div>
+						
+                        @Html.Partial("_Discontinued", Model)
+						@*<h2>@T("ProductDetails.Description.Heading")</h2>*@
+                        @if (!String.IsNullOrEmpty(Model.ShortDescription))
+                        {
+                            <div class="short-description">
+                                @Html.Raw(Model.ShortDescription)
+                            </div>
+                        }
+                        <div class="buttons">
+                            @Html.Widget("productdetails_inside_overview_buttons_before", Model.Id)
+                            @Html.Partial("_ProductAddToWishlistButton", Model.AddToCart)
+                            @Html.Partial("_CompareProductsButton", Model)
+                            @Html.Widget("productdetails_inside_overview_buttons_after", Model.Id)
+							@Html.Widget("SampleRequestForm_Widget", Model.Id)
+                        </div>
+					
+					
+                        @Html.Partial("_ProductEmailAFriendButton", Model)
+                        @Html.Widget("productdetails_overview_top", Model.Id)
+                        <!--availability-->
+                        @Html.Partial("_Availability", Model)
+                        <!--SKU, MAN, GTIN, vendor-->
+                        @Html.Partial("_SKU_Man_GTIN_Ven", Model)
+                        <!--delivery-->
+                        @Html.Partial("_DeliveryInfo", Model)
+                        <!--product manufacturers-->
+                        @Html.Partial("_ProductManufacturers", Model.ProductManufacturers)
+                        <!--product reviews-->
+                        @Html.Partial("_ProductReviewOverview", Model.ProductReviewOverview)
+                        <!--sample download-->
+                        @Html.Partial("_DownloadSample", Model)
+                        <!--attributes-->
+                        @{
+                            var dataDictAttributes = new ViewDataDictionary();
+                            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+                            @Html.Partial("_ProductAttributes", Model.ProductAttributes, dataDictAttributes)                  
+                        }
+                        <!--rental products-->
+                        @{
+                            var dataDictRental = new ViewDataDictionary();
+                            dataDictRental.TemplateInfo.HtmlFieldPrefix = string.Format("rental_{0}", Model.Id);
+                            @Html.Partial("_RentalInfo", Model, dataDictRental)
+                        }
+                        <!--price & add to cart-->
+                        @{
+                            var dataDictPrice = new ViewDataDictionary();
+                            dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", Model.Id);
+                            @Html.Partial("_ProductPrice", Model.ProductPrice, dataDictPrice)
+
+                            var dataDictAddToCart = new ViewDataDictionary();
+                            dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+                            @Html.Partial("_AddToCart", Model.AddToCart, dataDictAddToCart)
+                        }
+
+                        @Html.Partial("_ShareButton", Model)
+						
+                        @Html.Widget("productdetails_overview_bottom", Model.Id)
+                    </div>
+                    @*@if (!String.IsNullOrEmpty(Model.FullDescription))
+                    {
+                        <div class="full-description" itemprop="description">
+                            @Html.Raw(Model.FullDescription)
+                        </div>
+                    }*@
+                    <!--gift card-->
+                    @{
+                    var dataDictGiftCard = new ViewDataDictionary();
+                    dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}", Model.Id);
+                    @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                    }
+                </div>
+                @Html.Widget("productdetails_before_collateral", Model.Id)
+                <div class="product-collateral">
+                    @Html.Partial("_ProductTierPrices", Model.TierPrices)
+                    @Html.Partial("_ProductSpecifications", Model.ProductSpecifications)
+                    @Html.Partial("_ProductTags", Model.ProductTags)
+                </div>
+				<input type="hidden" id="sun_max_quantity_200" value="@maxQuantity"/>
+            </div>
+        }
+        @Html.Action("ProductsAlsoPurchased", "Product", new { productId = Model.Id })
+        @Html.Action("RelatedProducts", "Product", new { productId = Model.Id })
+        @Html.Widget("productdetails_bottom", Model.Id)
+    </div>
+</div>
+
+<script>
+
+function attrChangeNewFunc() {
+	$('.price-value-@Model.Id').addClass('updating');
+	$('.loader-gif').css('opacity', 1);
+	$.ajax({
+		cache: false,
+		url: '@Html.Raw(Url.Action("productdetails_attributechange", "shoppingcart", new {productId = @Model.Id, validateAttributeConditions = true, loadPicture = false }))',
+		data: $('#product-details-form').serialize(),
+		type: 'post',
+		success: function(data) {									
+			 if (data.subtotal) {
+				$('.price-value-@Model.Id').text(data.subtotal);
+				$('.loader-gif').css('opacity', 0);
+				$('.price-value-@Model.Id').removeClass('updating');
+			}
+		}
+	});
+}
+
+$(document).ready(function() {
+  if(@attrCount==0){
+	var timeout = null;
+	$('#addtocart_'+@Model.Id+'_EnteredQuantity').keyup(function() {
+		clearTimeout(timeout);
+		timeout = setTimeout(function () {
+			attrChangeNewFunc();
+			var keyupvalue = $('#addtocart_'+@Model.Id+'_EnteredQuantity').val();
+			$("#slider").slider('value', keyupvalue);
+		}, 800);
+	});
+  }
+  $( function() {
+
+	var handle = $( "#custom-handle" );
+	var minCount = parseInt($('#addtocart_'+@Model.Id+'_EnteredQuantity').val());
+	var maxCount = parseInt($('#sun_max_quantity_200').val());//20000;
+	if(maxCount!=9999) {
+		maxCount = maxCount* 5;
+	}
+	$( "#slider" ).slider({
+	  create: function() {
+		$('#slider .min').text(minCount);
+		handle.text( $( this ).slider( "value" ) );
+		$('#slider .max').text(maxCount);
+	  },
+	  min: minCount,
+	  max: maxCount,
+	  slide: function( event, ui ) {
+		handle.text( ui.value );
+		$('#addtocart_'+@Model.Id+'_EnteredQuantity').val(ui.value);
+	  },
+	  change: function( event, ui ) {
+		if(@attrCount>0) {
+			@(attributeChangeHandlerFuncName2)();
+		}
+		else {							
+			attrChangeNewFunc();
+		}
+		}
+	});
+  });	  
+});
+</script>
+

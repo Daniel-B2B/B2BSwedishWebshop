@@ -1,0 +1,48 @@
+﻿@using Nop.Plugin.Misc.GroupBuy.Models;
+@model FrontEndViewModel
+
+<p><strong>Group Buy</strong></p>
+
+@if (Model != null)
+{
+    if (Model.SoldQuantity != 0 && Model.CustomTierPriceModelList.Count() > 0)
+    {
+        <div>
+            <span>Current sold quantity: @Model.SoldQuantity</span>
+        </div>
+    }
+    foreach (var tierPrice in Model.CustomTierPriceModelList)
+    {
+        <div class="tier-prices">
+            <div class="title">
+                <strong>Group Buy: @tierPrice.Key </strong>
+            </div>
+            <div class="table-wrapper">
+                <table class="prices-table">
+                    <tr>
+                        <td class="field-header">
+                            @T("Products.TierPrices.Quantity")
+                        </td>
+                        @foreach (var item in tierPrice)
+                        {
+                            <td class="item-quantity">
+                                @(item.Quantity)+
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="field-header">
+                            @T("Products.TierPrices.Price")
+                        </td>
+                        @foreach (var item in tierPrice)
+                        {
+                            <td class="item-price">
+                                @(item.PriceString)
+                            </td>
+                        }
+                    </tr>
+                </table>
+            </div>
+        </div>
+    }
+}

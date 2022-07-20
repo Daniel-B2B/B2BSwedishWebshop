@@ -1,0 +1,39 @@
+﻿@using Nop.Web.Models.Catalog
+
+@model CatalogPagingFilteringModel
+
+<div class="block filter-block product-selectors">
+    @*view mode*@
+   @* @if (Model.AllowProductViewModeChanging)
+    {
+        <div class="product-viewmode">
+            <span>@T("Catalog.ViewMode")</span>
+            @Html.DropDownList("products-viewmode", Model.AvailableViewModes, new { onchange = "setLocation(this.value);" })
+        </div>
+    }*@
+    @*sorting*@
+    @if (Model.AllowProductSorting)
+    {
+		<div class="title"><a>@T("Catalog.OrderBy")</a></div>
+        <div class="filtersGroupPanel product-sorting">
+            @Html.DropDownList("products-orderby", Model.AvailableSortOptions, new { onchange = "setLocation(this.value);" })
+        </div>
+    }
+	@*<input name="products-orderby" type="radio" value="@Model.AvailableSortOptions[3].Value" checked="@Model.AvailableSortOptions[3].Selected" onchange="setLocation(this.value);" />@Model.AvailableSortOptions[3].Text 
+    <input name="products-orderby" type="radio" value="@Model.AvailableSortOptions[4].Value" checked="@Model.AvailableSortOptions[4].Selected" onchange="setLocation(this.value);"/>@Model.AvailableSortOptions[4].Text 
+    <input name="products-orderby" type="radio" value="@Model.AvailableSortOptions[0].Value" checked="@Model.AvailableSortOptions[0].Selected" onchange="setLocation(this.value);"/>@Model.AvailableSortOptions[0].Text *@
+	
+	 @* <input id="products-orderby" name="products-orderby" type="radio" value="10" checked="@Model.AvailableSortOptions[3].Selected"  class="sortOptionsDropDown" />@Model.AvailableSortOptions[3].Text 
+    <input id="products-orderby" name="products-orderby" type="radio" value="11" checked="@Model.AvailableSortOptions[4].Selected"  class="sortOptionsDropDown"/>@Model.AvailableSortOptions[4].Text 
+    <input id="products-orderby" name="products-orderby" type="radio" value="0" checked="@Model.AvailableSortOptions[0].Selected"  class="sortOptionsDropDown"/>@Model.AvailableSortOptions[0].Text *@
+    
+    @*page size*@
+   @* @if (Model.AllowCustomersToSelectPageSize)
+    {
+        <div class="product-page-size">
+            <span>@T("Catalog.PageSize")</span>
+            @Html.DropDownList("products-pagesize", Model.PageSizeOptions, new { onchange = "setLocation(this.value);" })
+            <span>@T("Catalog.PageSize.PerPage")</span>
+        </div>
+    }*@
+</div>

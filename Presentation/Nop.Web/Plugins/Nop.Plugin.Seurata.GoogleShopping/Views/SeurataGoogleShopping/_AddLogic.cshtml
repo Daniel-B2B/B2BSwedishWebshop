@@ -1,0 +1,246 @@
+﻿@using Nop.Plugin.Seurata.GoogleShopping.Constants
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body" id="pnlLogicMain">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <select class="form-control" id="ddlLogicType">
+                                <option value="0">Choose Type</option>
+                                <option value="@((int)CustomLabelLogicType.ByMargin)">By Margin (Product Price - Product Cost)</option>
+                                <option value="@((int)CustomLabelLogicType.ByDiscount)">By Discount (Product Price - Old Price)</option>
+                                <option value="@((int)CustomLabelLogicType.ByInventory)">By Inventory</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12" id="info-div">
+                            <span id="info-msg" style="font-size:13px; color:green;"></span>
+                        </div>
+                    </div>
+
+                    <br />
+                    <div id="pnlLogicMain2"></div>
+                    <button type="button" id="mainAdd" onclick="AppendNewDynamicFields()" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var divStartIndex = 1;
+    var divEndIndex = 9;
+    var totalLogics = 0;
+    var existingDivIds = [];
+
+    $(document).ready(function () {
+        $("#info-msg").html("If any logic is specified below then, label value mentioned for " + clickedCustomLabelName + " in configuration page will not be considered.");
+        $("#ddlLogicType").on('change', function () {
+            if ($(this).val() !== "0") {
+                ClearAllDynamicFields();
+                AppendNewDynamicFields();
+                $("#info-div").show();
+            }
+            else {
+                ClearAllDynamicFields();
+                $("#mainAdd").hide();
+                $("#info-div").hide();
+            }
+        });
+        $("#ddlLogicType").change();
+
+        GetDynamicLabelsData();
+    });
+
+    function DisablePercentageOption(divId) {
+        $("#pnlLogicddlOpType" + divId + " option[value*='" + '@((int)CustomLabelOperationType.Percentage)' + "']").remove();
+    }
+
+    function ClearAllDynamicFields() {
+        divStartIndex = 1;
+        divEndIndex = 9;
+        $.each(existingDivIds, function (index, value) {
+            $("#pnlLogic" + value).remove();
+        });
+        totalLogics = 0;
+        existingDivIds.splice(0, existingDivIds.length);
+    }
+
+    function AppendNewDynamicFields() {
+        $("#pnlLogicMain2").append(CreateDynamicFields());
+        $("#pnlLogicddlCdtn" + (divStartIndex - 1)).change();
+        CheckAddButton();
+
+        if ($("#ddlLogicType").val() === "@((int)CustomLabelLogicType.ByInventory)") {
+            DisablePercentageOption(divStartIndex - 1);
+        }
+    }
+
+    function RemoveDynamicField(handle, index) {
+        totalLogics--;
+        $("#" + handle).remove();
+        existingDivIds.splice($.inArray(index, existingDivIds), 1);
+        CheckAddButton();
+
+        if (totalLogics === 0) {
+            ClearAllDynamicFields();
+            AppendNewDynamicFields();
+        }
+
+        if (existingDivIds.length === 0) {
+            $("#ddlLogicType").val("0");
+            $("#mainAdd").hide();
+            $("#info-div").hide();
+        }
+    }
+
+    function CheckAddButton() {
+        if (divEndIndex  > totalLogics) {
+            $("#mainAdd").show();
+        }
+        else {
+            $("#mainAdd").hide();
+        }
+    }
+
+    function CreateDynamicFields() {
+        var divData = '<div class="form-group" id="pnlLogic' + divStartIndex + '">' +
+            '<div class="col-md-2">' +
+            '  <label>Label Name<sup class="red-req">*</sup></label>' +
+            ' <input type="text" class="form-control" id="pnlLogicCLabelVal' + divStartIndex + '" placeholder="Label Name" maxlength="50" />' +
+            '</div>' +
+            '<div class="col-md-3">' +
+            '<label>Condition Type</label>' +
+            '<select class="form-control" id="pnlLogicddlCdtn' + divStartIndex + '" onchange="SetValueBoxes(' + divStartIndex +')">' +
+            '<option value="@((int)CustomLabelConditionType.GreaterThan)">Greater than X</option>' +
+            '<option value="@((int)CustomLabelConditionType.LessThan)">Lesser than X</option>' +
+            '<option value="@((int)CustomLabelConditionType.Equals)">Equals X</option>' +
+              '<option value="@((int)CustomLabelConditionType.Between)">Between X & Y</option>' +
+            '</select>' +
+            '</div>' +
+             '<div class="col-md-2">' +
+            '  <label>Operation Type</label>' +
+            '<select class="form-control" id="pnlLogicddlOpType' + divStartIndex + '">' +
+            '  <option value="@((int)CustomLabelOperationType.Exact)">Exact</option>' +
+            '<option value="@((int)CustomLabelOperationType.Percentage)">Percent</option>' +
+            '</select>' +
+            '</div>' +
+            '<div class="col-md-2">' +
+            '  <label>X Value<sup class="red-req">*</sup></label>' +
+            ' <input type="number" step=".01" class="form-control" id="pnlLogicCdtnValX' + divStartIndex + '" placeholder="X Value" required />' +
+            '</div>' +
+            '<div class="col-md-2" id="pnlLogicCdtnValYDiv' + divStartIndex + '"> ' +
+            '  <label>Y Value<sup class="red-req">*</sup></label>' +
+            ' <input type="number" step=".01" class="form-control" id="pnlLogicCdtnValY' + divStartIndex + '" placeholder="Y Value" />' +
+            '</div>' +
+            '<div class="col-md-1">' +
+            '<i style="margin-top: 35px;cursor:pointer" id="removebtn' + divStartIndex + '" onclick="RemoveDynamicField(\'pnlLogic' + divStartIndex + '\', ' + divStartIndex + ')" class="fa fa-minus-circle fa-lg"></i>';
+        '</div></div>';
+        existingDivIds.push(divStartIndex);
+        divStartIndex++;
+        totalLogics++;
+        return divData;
+    }
+
+    function SetValueBoxes(ddlId) {
+        if ($("#pnlLogicddlCdtn" + ddlId).val() === "@((int)CustomLabelConditionType.Between)") {
+            $("#pnlLogicCdtnValYDiv" + ddlId).show();
+        }
+        else {
+            $("#pnlLogicCdtnValYDiv" + ddlId).hide();
+        }
+    }
+
+    function SaveDynamicLabelsData() {
+        var jsonObj = {};
+        jsonObj.LogicType = $("#ddlLogicType").val();
+        jsonObj.LabelNumber = clickedCustomLabelValue; // Set on Setting Page
+
+        var itemArray = [];
+        $.each(existingDivIds, function (index, value) {
+            var condtnValueX = $("#pnlLogicCdtnValX" + value).val();
+            var condtnValueY = $("#pnlLogicCdtnValY" + value).val();
+            var clabelValue = $("#pnlLogicCLabelVal" + value).val();
+            if (condtnValueX !== '' && clabelValue !== '') {
+                var item = {};
+
+                if ($("#pnlLogicddlCdtn" + value).val() !== "@((int)CustomLabelConditionType.Between)") {
+                    condtnValueY = 0;
+                }
+
+                item.ConditionType = $("#pnlLogicddlCdtn" + value).val();
+                item.ConditionValueX = condtnValueX;
+                item.ConditionValueY = condtnValueY;
+                item.OperationType = $("#pnlLogicddlOpType" + value).val();
+                item.LabelValue = clabelValue;
+                itemArray.push(item);
+            }
+        });
+        jsonObj.LogicData = itemArray;
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: "@(Url.Action("SaveCustomLabelLogicData", "SeurataGoogleShopping"))",
+            data: { labelData: JSON.stringify(jsonObj) },
+            success: function (data) {
+                $('#logicModal').modal('toggle');
+                $('#syncing-div').show();
+                $("#spinner-sync-success").show();
+                $('#sync-message').html("Values saved for " + clickedCustomLabelName);
+                setTimeout(function () {
+                    $('#syncing-div').hide();
+                    $('#sync-message').html('');
+                    $("#spinner-sync-success").hide();
+                }, 8000);
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+            },
+            traditional: true
+        });
+    }
+
+    function GetDynamicLabelsData() {
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: "@(Url.Action("GetCustomLabelLogicData", "SeurataGoogleShopping"))",
+            data: { labelValue: clickedCustomLabelValue },
+            success: function (data) {
+                if (data.Payload !== '' && data.Payload !== null) {
+                    var jsonObj = $.parseJSON(data.Payload);
+
+                    if (jsonObj.LogicType === "0") {
+                        ClearAllDynamicFields();
+                        $("#mainAdd").hide();
+                        $("#info-div").hide();
+                        return false;
+                    }
+                    else {
+                        $("#info-div").show();
+                    }
+
+                    ClearAllDynamicFields();
+                    $("#ddlLogicType").val(jsonObj.LogicType);
+                    $.each(new Array(jsonObj.LogicData.length), function (index) {
+                        AppendNewDynamicFields();
+                        $("#pnlLogicddlCdtn" + (index + 1)).val(jsonObj.LogicData[index].ConditionType);
+                        $("#pnlLogicCdtnValX" + (index + 1)).val(jsonObj.LogicData[index].ConditionValueX);
+                        $("#pnlLogicCdtnValY" + (index + 1)).val(jsonObj.LogicData[index].ConditionValueY);
+                        $("#pnlLogicddlOpType" + (index + 1)).val(jsonObj.LogicData[index].OperationType);
+                        $("#pnlLogicCLabelVal" + (index + 1)).val(jsonObj.LogicData[index].LabelValue);
+                        SetValueBoxes(divStartIndex - 1);
+                    });
+                    if (jsonObj.LogicData.length === 0) {
+                        ClearAllDynamicFields();
+                        AppendNewDynamicFields();
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+            },
+            traditional: true
+        });
+    }
+</script>

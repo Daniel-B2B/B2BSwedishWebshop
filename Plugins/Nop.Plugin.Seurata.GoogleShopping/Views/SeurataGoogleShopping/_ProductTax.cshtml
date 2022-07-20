@@ -1,0 +1,19 @@
+﻿@using Nop.Plugin.Seurata.GoogleShopping.Models;
+@using Nop.Web.Framework;
+@model SeurataGoogleShoppingTaxModel
+
+
+<div class="row">
+    <div class="col-md-6">
+        @Html.NopLabelFor(model => model.TaxCountry)
+        @Html.NopEditorFor(model => model.TaxCountry)
+        @Html.NopLabelFor(model => model.Rate)
+        @Html.NopEditorFor(model => model.Rate)
+    </div>
+    <div class="col-md-6">
+        @Html.NopLabelFor(model => model.LocationId)
+        @Html.NopEditorFor(model => model.LocationId)
+        @Html.NopLabelFor(model => model.ShippingTaxed)
+        @Html.NopEditorFor(model => model.ShippingTaxed)
+    </div>
+</div>

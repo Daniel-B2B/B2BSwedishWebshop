@@ -1,0 +1,86 @@
+﻿@model NewsletterGroupBuyBoxModel
+@using Nop.Plugin.Misc.NewsletterGroupBuy.Models
+<div class="newsletter">
+    <div class="title">
+        <strong>@T("Newsletter.Title")</strong>
+        <p>To receive regular updates direct to your inbox please subscribe today</p>
+    </div>
+    <div class="newsletter-subscribe" id="newsletter-subscribe-block">
+        <div class="newsletter-email">
+            @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newslettergroupbuy-email", @class = "newsletter-subscribe-text", placeholder = T("Newsletter.Email.Placeholder") })
+            <input type="button" value="@T(Model.AllowToUnsubscribe ? "Newsletter.Options.Send" : "Newsletter.Options.Subscribe")" id="newslettergroupbuy-subscribe-button" class="button-1 newslettergroupbuy-subscribe-button" />
+            @if (Model.AllowToUnsubscribe)
+            {
+                <div class="options">
+                    <span class="subscribe">
+                        <input id="newslettergroupbuy_subscribe" type="radio" value="newslettergroupbuy_subscribe" name="newslettergroupbuy_block" checked="checked" />
+                        <label for="newslettergroupbuy_subscribe">@T("Newsletter.Options.Subscribe")</label>
+                    </span>
+                    <span class="unsubscribe">
+                        <input id="newslettergroupbuy_unsubscribe" type="radio" value="newslettergroupbuy_unsubscribe" name="newslettergroupbuy_block" />
+                        <label for="newslettergroupbuy_unsubscribe">@T("Newsletter.Options.Unsubscribe")</label>
+                    </span>
+                </div>
+            }
+        </div>
+        <div class="newsletter-validation">
+            <span id="subscribe-loading-progress" style="display: none;" class="please-wait">@T("Common.Wait...")</span>
+            @Html.ValidationMessageFor(x => x.NewsletterEmail)
+        </div>
+    </div>
+    <div class="newslettergroupbuy-result" id="newslettergroupbuy-result-block"></div>
+    <script type="text/javascript">
+        function newslettergroupbuy_subscribe(subscribe) {
+            var subscribeProgress = $("#subscribe-loading-progress");
+            subscribeProgress.show();
+            var postData = {
+                subscribe: subscribe,
+                email: $("#newslettergroupbuy-email").val()
+            };
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "@(Url.RouteUrl("SubscribeNewsletterGroupBuy"))",
+                data: postData,
+                success: function(data) {
+                    subscribeProgress.hide();
+                    $("#newslettergroupbuy-result-block").html(data.Result);
+                    if (data.Success) {
+                        $('#newslettergroupbuy-subscribe-block').hide();
+                        $('#newslettergroupbuy-result-block').show();
+                    } else {
+                        $('#newslettergroupbuy-result-block').fadeIn("slow").delay(2000).fadeOut("slow");
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert('Failed to subscribe.');
+                    subscribeProgress.hide();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#newslettergroupbuy-subscribe-button').click(function () {
+                @if (Model.AllowToUnsubscribe)
+                {
+                    <text>if ($('#newslettergroupbuy_subscribe').is(':checked')) {
+                    newslettergroupbuy_subscribe('true');
+                    } else {
+                    newslettergroupbuy_subscribe('false');
+                    }</text>
+                }
+                else
+                {
+                    <text>newslettergroupbuy_subscribe('true');</text>
+                }
+            });
+            $("#newslettergroupbuy-email").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    $("#newslettergroupbuy-subscribe-button").click();
+                    return false;
+                }
+            });
+        });
+    </script>
+</div>
+

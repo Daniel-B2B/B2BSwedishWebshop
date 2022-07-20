@@ -1,0 +1,79 @@
+@model FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models.AddTrackingCodeModel
+@using FoxNetSoft.Plugin.Misc.TrackingCodeManager.Models    
+@using Nop.Web.Framework
+@using Nop.Web.Framework.UI
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+    //page title
+    ViewBag.Title = @T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.AddNew").Text;
+
+    Html.SetActiveMenuItemSystemName("FoxNetSoft.TrackingCodeManager.List");
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "trackingcode-form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.AddNew")
+            <small><i class="fa fa-arrow-circle-left"></i>@Html.ActionLink(T("Admin.FoxNetSoft.Plugin.Misc.TrackingCodeManager.TrackingCode.BackToList").Text, "List")</small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.TypeTag)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopDropDownListFor(model => model.TypeTag, Model.AvailableTypeTags)
+                                @Html.ValidationMessageFor(model => model.TypeTag)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.Name)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopEditorFor(x => x.Name)
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.StoreId)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopDropDownListFor(model => model.StoreId, Model.AvailableStores)
+                                @Html.ValidationMessageFor(model => model.StoreId)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                @Html.NopLabelFor(model => model.MerchantId)
+                            </div>
+                            <div class="col-md-9">
+                                @Html.NopEditorFor(x => x.MerchantId)
+                                @Html.ValidationMessageFor(model => model.MerchantId)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

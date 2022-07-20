@@ -1,0 +1,712 @@
+﻿@using Nop.Plugin.Seurata.GoogleShopping.Models;
+@using Nop.Plugin.Seurata.GoogleShopping.Domain;
+@model SeurataGoogleShoppingProductModel
+
+@{
+    Layout = ViewNames.AdminLayout;
+    Html.AddCssFileParts(ViewNames.GoogleShoppingStyles);
+    //page title
+    ViewBag.Title = T("Plugins.Seurata.GoogleShopping.Product.EditProductDetails").Text;
+    Html.SetActiveMenuItemSystemName("Seurata-GoogleShopping-Products-Menu");
+    Html.AddScriptParts("~/Plugins/Nop.Plugin.Seurata.GoogleShopping/Scripts/SeurataGoogleShoppingEdit.js");
+}
+
+@using Nop.Plugin.Seurata.GoogleShopping.Constants;
+@using Nop.Web.Framework;
+@using Nop.Web.Framework.UI;
+
+<div class="col-md-12" style="display:none;margin-top:4px;" id="edit-notifications">
+    <div class="start-loader ajax-loader-shop-feed-div syncing-div">
+        <span class="ajax-loader-shop-feed-span" id="notific-message"></span>
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "shoppingFeedProduct-form" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ProductId)
+    @Html.HiddenFor(model => model.StoreId)
+    @Html.HiddenFor(model => model.Name)
+    @Html.HiddenFor(model => model.FeedSelectionTypeId)
+    @Html.AntiForgeryToken()
+    <div class="content-header clearfix">
+        @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+        {
+            <h1 class="pull-left header-status-text">
+                @T("Plugins.Seurata.GoogleShopping.Product.EditProductDetails") - @Model.Name
+                @if (Model.StatusId == (int)FeedStatus.Published)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;background: green;color: white;" class="grid-report-item">@Model.Status</span></small>
+                }
+                else if (Model.StatusId == (int)FeedStatus.Disapproved)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;background:#a90c0c;color: white;" class="grid-report-item">@Model.Status</span></small>
+                }
+                else if (Model.StatusId == (int)FeedStatus.Unpublished)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;background:#d4cfcf;color:white;" class="grid-report-item">@Model.Status</span></small>
+                }
+                else if (Model.StatusId == (int)FeedStatus.Processing)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;" class="grid-report-item blue">Processing</span></small>
+                }
+                else if (Model.StatusId == (int)FeedStatus.New)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;background: black;color:white;" class="grid-report-item">@Model.Status</span></small>
+                }
+                else if (Model.StatusId == (int)FeedStatus.Imported)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;background:#c8c8ca;color:black;" class="grid-report-item">@Model.Status</span></small>
+                }
+                else if (Model.StatusId == (int)FeedStatus.Pending)
+                {
+                    <small><span style="margin-top: 5px; display: inline-block;background:#4bafc7;color:white;" class="grid-report-item">Awaiting Sync</span></small>
+                }
+                <small><i class="fa fa-arrow-circle-left"></i>@Html.ActionLink(T("Plugins.Seurata.GoogleShopping.Product.BackToList").Text, "List")</small>
+            </h1>
+        }
+        @if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None)
+        {
+            <h1 class="pull-left header-status-text-var">
+                Edit Variant(s)- @Model.Name
+                <small><i class="fa fa-arrow-circle-left"></i>@Html.ActionLink(T("Plugins.Seurata.GoogleShopping.Product.BackToList").Text, "List")</small>
+            </h1>
+        }
+        <div class="pull-right header-save-btns">
+            @if (Model.FeedSelectionTypeId != (int)FeedSelectionType.Variant)
+            {
+                <button type="submit" name="save" title="Product will be saved." class="btn bg-blue">
+                    <i class="fa fa-floppy-o"></i>
+                    @T("Admin.Common.Save")
+                </button>
+            }
+
+            @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+            {
+                <button type="submit" name="save-publish" title="@if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None) { <text>All variants will be published to google merchant center.</text>} else { <text> Product will be published to google merchant center.</text>}" class="btn bg-blue">
+                    <i class="fa fa-cloud-upload"></i>
+                    @if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None)
+                    {
+                        @T("Plugins.Seurata.GoogleShopping.PublishAll")
+                    }
+                    else
+                    {
+                        @T("Plugins.Seurata.GoogleShopping.SavePublishSingle")
+                    }
+                </button>
+            }
+            else
+            {
+                <button type="button" id="publishMain" title="@if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None) { <text>All variants will be published to google merchant center.</text>} else { <text> Product will be published to google merchant center.</text>}" class="btn bg-blue">
+                    <i class="fa fa-cloud-upload"></i>
+                    @if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None)
+                    {
+                        @T("Plugins.Seurata.GoogleShopping.PublishAll")
+                    }
+                    else
+                    {
+                        @T("Plugins.Seurata.GoogleShopping.SavePublishSingle")
+                    }
+                </button>
+            }
+
+            @if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None || Model.StatusId == (int)FeedStatus.Pending || Model.StatusId == (int)FeedStatus.Processing || Model.StatusId == (int)FeedStatus.Published || Model.StatusId == (int)FeedStatus.Disapproved)
+            {
+                <button type="button" name="unpublish" id="unpublishMain" formnovalidate="formnovalidate" title="@if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None)
+                { <text>All variants will be deleted from google merchant center.</text>
+                } else
+                {
+                    <text> Product will be deleted from google merchant center(If, it was Published earlier).</text>}" class="btn bg-red">
+                    <i class="fa fa-eye-slash"></i>
+                    @if (Model.FeedSelectionTypeId != (int)FeedSelectionType.None)
+                    {
+                        @T("Plugins.Seurata.GoogleShopping.Product.UnpublishAll")
+                    }
+                    else
+                    {
+                        @T("Plugins.Seurata.GoogleShopping.Product.Unpublish")
+                    }
+                </button>
+            }
+
+            <button type="button" id="resetbtn" name="reset" formnovalidate="formnovalidate" title="Product will be changed to original, all changes made will be lost." class="btn bg-blue">
+                <i class="fa fa-undo"></i>
+                @T("Plugins.Seurata.GoogleShopping.Reset")
+            </button>
+        </div>
+    </div>
+
+    <div id="loadVariantsData" data-request-url="@Url.Action("GoogleShoppingVariantProductList", "SeurataGoogleShopping")"
+         data-request-urlpopup="@(Url.Action("GetVariantFeedById", "SeurataGoogleShopping"))"
+         data-request-urlasearch="@Url.Action("GoogleCategorySearchAutoComplete", "SeurataGoogleShopping")"
+         data-request-errorpopup="@Url.Action("GetErrorListByFeedId", "SeurataGoogleShopping")"></div>
+
+    <div class="content">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    @if (Model.HasErrorList && Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                    {
+                        <div class="row row-section error-top">
+                            <div class="col-sm-12">
+                                <div class="row error-row">
+                                    <a href="javascript:void(0)" onclick="OpenErrorListModalPopup('@Model.GoogleProductId')">View Issue(s)</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.Common || Model.FeedSelectionTypeId == (int)FeedSelectionType.Variant)
+                    {
+                        <div class="row row-section" id="fsel-div">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div>
+                                            <p style="background-color:antiquewhite"> It is preferable to edit data with common parent data feed mode. Once common data feed is saved, shift to 'Variant wise' mode.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="checkbox inline-checkbox fstype">
+                                            <label>
+                                                <input type="radio" name="feedselectiontype" value="FeedSelectionCommon" @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.Common) { <text> checked="checked" </text> }>
+                                                <div class="label-wrapper"><label class="control-label" for="FeedSelectionCommon" title="">Common Parent data feed</label></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="checkbox inline-checkbox fstype">
+                                            <label>
+                                                <input type="radio" name="feedselectiontype" value="FeedSelectionVariants" @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.Variant) { <text> checked="checked" </text> }>
+                                                <div class="label-wrapper"><label class="control-label" for="FeedSelectionVariants" title="">Variant wise data feed (Advanced option)</label></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row row-section hide-div com-parent">
+                        <div class="col-sm-3">
+                            <img src="@Model.ImageUrl" class="product-img" />
+                            <p>
+                                <a href="~/Admin/Product/Edit/@Model.ProductId" style="margin-top:2%" class="btn btn-default" role="button" target="_blank">Edit product</a>
+                                @if (Model.PublishedOnce)
+                                {
+                                    <a id="mainProdVMCenter" style="margin-top:2%;display:none" href='@Model.ViewInMerchantCenterLink' style="margin-top:2%" class="btn btn-default" target='_blank'>View in Merchant Center</a>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-sm-9 productinfo">
+                            <div class="innerlist">
+                                <div class="checkbox inline-checkbox">
+                                    <label class="first-label">
+                                        <input type="radio" name="nameselectiontype" value="Name" @if (Model.NameSelectionType == SyncMessages.DEFAULT_TITLE_SYNCTYPE_NAME) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.Name)) { <text> disabled="disabled" </text> }>
+                                        @Html.NopLabelFor(model => model.Name)
+                                    </label>
+                                </div>
+                                <div class="checkbox inline-checkbox">
+                                    <label>
+                                        <input type="radio" name="nameselectiontype" value="SEName" @if (Model.NameSelectionType == SyncMessages.DEFAULT_TITLE_SYNCTYPE_SE_NAME) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.SEName)) { <text> disabled="disabled" </text> }>
+                                        @Html.NopLabelFor(model => model.SEName)
+                                    </label>
+                                </div>
+                                <div class="checkbox inline-checkbox">
+                                    <label>
+                                        <input type="radio" name="nameselectiontype" value="CustomName" @if (Model.NameSelectionType == SyncMessages.DEFAULT_TITLE_SYNCTYPE_CUSTOM_NAME) { <text> checked="checked" </text> }>
+                                        <div class="label-wrapper"><label class="control-label" for="CustomName" title="">Custom Name <span class="red-req hide-div" id="cust_name_req">*</span></label></div>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label id="NameMain" class="label-f-oride">@Model.Name</label>
+                                    <label id="SEName" class="label-f-oride">@Model.SEName</label>
+                                    @Html.EditorFor(model => model.CustomName, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.CustomName)
+                                    <h6 class="pull-right char-count-msg" id="CustomName_valtn"></h6>
+                                </div>
+                            </div>
+                            <div class="innerlist">
+                                <div class="checkbox inline-checkbox">
+                                    <label class="first-label">
+                                        <input type="radio" name="descriptionselectiontype" value="Description" @if (Model.DescriptionSelectionType == SyncMessages.DEFAULT_DESC_SYNCTYPE_DECSRIPTION) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.Description)) { <text> disabled="disabled" </text> }>
+                                        @Html.NopLabelFor(model => model.Description)
+                                    </label>
+                                </div>
+                                <div class="checkbox inline-checkbox">
+                                    <label>
+                                        <input type="radio" name="descriptionselectiontype" value="SEDescription" @if (Model.DescriptionSelectionType == SyncMessages.DEFAULT_DESC_SYNCTYPE_SE_DECSRIPTION) { <text> checked="checked" </text> } @if (string.IsNullOrEmpty(Model.SEDescription)) { <text> disabled="disabled" </text> }>
+                                        @Html.NopLabelFor(model => model.SEDescription)
+                                    </label>
+                                </div>
+                                <div class="checkbox inline-checkbox">
+                                    <label>
+                                        <input type="radio" name="descriptionselectiontype" value="CustomDescription" @if (Model.DescriptionSelectionType == SyncMessages.DEFAULT_DESC_SYNCTYPE_CUSTOM_DECSRIPTION) { <text> checked="checked" </text> }>
+                                        <div class="label-wrapper"><label class="control-label" for="CustomDescription" title="">Custom Description <span id="cust_desc_req" class="red-req hide-div">*</span></label></div>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label id="Description" class="label-f-oride">@Model.Description</label>
+                                    <label id="SEDescription" class="label-f-oride">@Model.SEDescription</label>
+                                    @Html.TextAreaFor(model => model.CustomDescription, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CustomDescription)
+                                    <h6 class="pull-right char-count-msg" id="CustomDescription_valtn"></h6>
+                                </div>
+                            </div>
+
+                            <div class="innerlist">
+                                @Html.NopLabelFor(model => model.CategoryStatusId)
+                                @Html.DropDownListFor(model => model.CategoryStatusId, Model.AvailableCategories, new { @class = "form-control" })
+                            </div>
+
+                            <div class="innerlist">
+                                @Html.NopLabelFor(model => model.ManufacturerStatusId)
+                                @Html.DropDownListFor(model => model.ManufacturerStatusId, Model.AvailableManufacturers, new { @class = "form-control" })
+                            </div>
+
+                            @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                            {
+                                <div class="innerlist">
+                                    @Html.NopLabelFor(model => model.Price)
+                                    @Html.NopDisplayFor(model => model.Price)
+                                </div>
+                                <div class="innerlist">
+                                    @Html.NopLabelFor(model => model.Sku)
+                                    @Html.NopDisplayFor(model => model.Sku)
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                    {
+                        <div class="row row-section hide-div com-parent">
+                            <div class="col-sm-3">
+                                <p class="product-title">@T("Plugins.Seurata.GoogleShopping.Products.StockAvailability")</p>
+                                @if (Model.StockAvailabilityStatusId == (int)FeedAvailability.Preorder)
+                                {
+                                    if (Model.PreOrderStartDate.HasValue)
+                                    {
+                                        <p>Preorder Start Date is the date a pre-ordered product becomes available for delivery</p>
+                                    }
+                                }
+                            </div>
+
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        @if (Model.StockAvailabilityStatusId == (int)FeedAvailability.InStock)
+                                        {
+                                            <div class="innerlist innerlist-label-wrapper">
+                                                <small><span style="margin-top: 5px; display: inline-block;background: #ffffff;color:green;border: 1px solid green;" id="stockAvl" class="grid-report-item">@Model.StockAvailabilityStatus</span></small>
+                                            </div>
+                                        }
+                                        else if (Model.StockAvailabilityStatusId == (int)FeedAvailability.OutOfStock)
+                                        {
+                                            <div class="innerlist innerlist-label-wrapper">
+                                                <small><span style="margin-top: 5px; display: inline-block;background: #ffffff;color:#a90c0c;border: 1px solid #a90c0c;" id="stockAvl" class="grid-report-item">@Model.StockAvailabilityStatus</span></small>
+                                            </div>
+                                        }
+                                        else if (Model.StockAvailabilityStatusId == (int)FeedAvailability.Preorder)
+                                        {
+                                            <div class="innerlist innerlist-label-wrapper">
+                                                <small><span style="margin-top: 5px; display: inline-block;background: #ffffff;color:black;border: 1px solid black;" id="stockAvl" class="grid-report-item">@Model.StockAvailabilityStatus</span></small>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @if (Model.StockAvailabilityStatusId == (int)FeedAvailability.Preorder)
+                                        {
+                                            if (Model.PreOrderStartDate.HasValue)
+                                            {
+                                                <div class="innerlist">
+                                                    @Html.NopLabelFor(model => model.PreOrderStartDate)
+                                                    @Html.NopDisplayFor(model => model.PreOrderStartDate)
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                    <div class="row row-section hide-div com-parent">
+                        <div class="col-sm-3">
+                            <p class="product-title">Sale Pricing</p>
+                            <p>If your product is on<b> Sale</b>(discounted), then you can also mention the <b>Start date</b> along with <b>Sale Price</b> (If date is not mentioned then Sale Price always applies).</p>
+                        </div>
+
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.IsOnSale)
+                                        @Html.NopEditorFor(model => model.IsOnSale)
+                                    </div>
+                                </div>
+                                @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                                {
+                                    <div class="col-sm-3">
+                                        <div class="form-group" id="salepricediv" style="display:@(Model.IsOnSale ? "" : "none")">
+                                            @Html.NopLabelFor(model => model.SalePrice)
+                                            @Html.NopDisplayFor(model => model.SalePrice)
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-sm-6">
+                                    <div class="form-group" id="salepricestartdiv" style="display:@(Model.IsOnSale ? "" : "none")">
+                                        @Html.NopLabelFor(model => model.SaleStartDate)
+                                        @Html.NopEditorFor(model => model.SaleStartDate)
+                                        @Html.ValidationMessageFor(model => model.SaleStartDate)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                    {
+                        <div class="row row-section hide-div com-parent">
+                            <div class="col-sm-3">
+                                <p class="product-title">Custom Pricing</p>
+                                <p>Set custom pricing for you product feed. Submit an amount that will match the price on your landing page.</p>
+                            </div>
+
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            @Html.NopLabelFor(model => model.EnableCustomPrice)
+                                            @Html.NopEditorFor(model => model.EnableCustomPrice)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group" id="custompricediv" style="display:@(Model.EnableCustomPrice ? "" : "none")">
+                                            @Html.NopLabelFor(model => model.CustomPrice)
+                                            @Html.NopEditorFor(model => model.CustomPrice)
+                                            @Html.ValidationMessageFor(model => model.CustomPrice)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row row-section hide-div com-parent">
+                        <div class="col-sm-3">
+                            <p class="product-title">Google Product Category</p>
+                            <p>Select the closest match for your product from Google's list of valid product categories and include either the full path of the category or the numerical category ID</p>
+                            <p><b>Required</b> for <b>Apparel & Accessories (166), Media (783), and Software (2092)</b> categories.</p>
+                            <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="gcat-more">more</a>
+                        </div>
+
+                        <div class="col-sm-9">
+                            <div class="form-group">
+                                @Html.NopLabelFor(model => model.GoogleCategory)
+                                <input type="text" class="form-control" id="search-category-name" autocomplete="off" placeholder="Search Google Category By Name or Category Id" />
+                                <span id="search-category-friendly-name"></span>
+                                <button type="button" id="search-category-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                                @Html.NopEditorFor(model => model.GoogleCategory)
+
+                                @if (!string.IsNullOrEmpty(Model.GoogleCategory))
+                                {
+                                    <text>
+                                        <script>
+                                            $('#search-category-friendly-name').text('@Html.Raw(Model.GoogleCategory)');
+                                            $('#search-category-clear').show();
+                                        </script>
+                                    </text>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                    {
+                        <div class="row row-section hide-div com-parent">
+                            <div class="col-sm-3">
+                                <p class="product-title">Any Specifications ?</p>
+                            </div>
+
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            @Html.NopLabelFor(model => model.Color)
+                                            @Html.EditorFor(model => model.Color, new { htmlAttributes = new { @class = "form-control" } })
+                                            <h6 class="pull-right char-count-msg" id="Color_valtn"></h6>
+                                            <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="spec-color-instr">Instructions</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            @Html.NopLabelFor(model => model.Size)
+                                            @Html.EditorFor(model => model.Size, new { htmlAttributes = new { @class = "form-control" } })
+                                            <h6 class="pull-right char-count-msg" id="Size_valtn"></h6>
+                                            <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="spec-size-instr">Instructions</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            @Html.NopLabelFor(model => model.Pattern)
+                                            @Html.EditorFor(model => model.Pattern, new { htmlAttributes = new { @class = "form-control" } })
+                                            <h6 class="pull-right char-count-msg" id="Pattern_valtn"></h6>
+                                            <a href="javascript:void(0)" data-tooltip="tooltip" data-trigger="hover" id="spec-pttrn-instr">Instructions</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row row-section hide-div com-parent">
+                        <div class="col-sm-3">
+                            <p class="product-title">Listing details</p>
+                            <p>Provide Google Merchant Center specific attributes for this product.</p>
+                            <p><b>MPN required</b> (Only if your new product does not have a manufacturer assigned GTIN)</p>
+                            <p><b>GTIN required </b>(For all new products with a GTIN assigned by the manufacturer)</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                                    {
+                                        <div class="form-group">
+                                            @Html.NopLabelFor(model => model.ManufacturerPartNumber)
+                                            @Html.EditorFor(model => model.ManufacturerPartNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                            <h6 class="pull-right char-count-msg" id="ManufacturerPartNumber_valtn"></h6>
+                                        </div>
+                                    }
+                                    <div class="form-group">
+                                        <label class="control-label">Condition <span class="red-req">*</span></label>
+                                        @Html.DropDownListFor(model => model.ConditionStatusId, Model.AvailableGoogleConditions, "Select", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.ConditionStatusId)
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                                    {
+                                        <div class="form-group">
+                                            @Html.NopLabelFor(model => model.Gtin)
+                                            @Html.EditorFor(model => model.Gtin, new { htmlAttributes = new { @class = "form-control" } })
+                                            <h6 class="pull-right char-count-msg" id="Gtin_valtn"></h6>
+                                        </div>
+                                    }
+                                    <div class="form-group">
+                                        <label class="control-label">Gender</label>
+                                        @Html.NopDropDownListFor(model => model.GenderStatusId, Model.AvailableGoogleGenders)
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Age Group</label>
+                                        @Html.NopDropDownListFor(model => model.AgeGroupStatusId, Model.AvailableGoogleAgeGroups)
+                                    </div>
+                                    @if (Model.FeedSelectionTypeId == (int)FeedSelectionType.None)
+                                    {
+                                        <div class="form-group">
+                                            <label class="control-label">If this is custom or unique product</label>
+                                            <p>
+                                                @Html.NopEditorFor(model => model.IsIdentifierExist) <span>Tell Google to ignore product identifiers</span><br />
+                                                <span class="custom-prod-ident">This product does not have an MPN or a unique product identifier (UPC, ISBN, EAN, JAN) set as a variant barcode.</span>
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-section hide-div com-parent">
+                        <div class="col-sm-3">
+                            <p class="product-title">Shopping Campaign details</p>
+                            <p>Label that you assign to a product to help organize bidding and reporting in Shopping campaigns</p>
+                            <p>Use a value that you'll recognize in your Shopping campaign. The value won't be shown to users who see your ads</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="row ">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.CustomLabel0)
+                                        @Html.EditorFor(model => model.CustomLabel0, new { htmlAttributes = new { @class = "form-control" } })
+                                        <h6 class="pull-right char-count-msg" id="CustomLabel0_valtn"></h6>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.CustomLabel2)
+                                        @Html.EditorFor(model => model.CustomLabel2, new { htmlAttributes = new { @class = "form-control" } })
+                                        <h6 class="pull-right char-count-msg" id="CustomLabel2_valtn"></h6>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.CustomLabel4)
+                                        @Html.EditorFor(model => model.CustomLabel4, new { htmlAttributes = new { @class = "form-control" } })
+                                        <h6 class="pull-right char-count-msg" id="CustomLabel4_valtn"></h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.CustomLabel1)
+                                        @Html.EditorFor(model => model.CustomLabel1, new { htmlAttributes = new { @class = "form-control" } })
+                                        <h6 class="pull-right char-count-msg" id="CustomLabel1_valtn"></h6>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.CustomLabel3)
+                                        @Html.EditorFor(model => model.CustomLabel3, new { htmlAttributes = new { @class = "form-control" } })
+                                        <h6 class="pull-right char-count-msg" id="CustomLabel3_valtn"></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-section hide-div com-parent">
+                        <div class="col-sm-3">
+                            <p class="product-title">Shipping</p>
+                            <p>Label that you assign to a product to help assign correct shipping costs in Merchant Center account settings</p>
+                            <p>
+                                Use a value that you'll recognize in your account shipping settings. The value won't be shown to users who see your ads.
+                                Examples:
+                                Sameday,
+                                Oversize,
+                                Only FedEx.
+                            </p>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="row ">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        @Html.NopLabelFor(model => model.ShippingLabel)
+                                        @Html.EditorFor(model => model.ShippingLabel, new { htmlAttributes = new { @class = "form-control" } })
+                                        <h6 class="pull-right char-count-msg" id="ShippingLabel_valtn"></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="last-section hide-div" id="attributesID">
+                        <p class="product-title">Variants</p>
+                        <p>Each variant is submitted to Google as a unique product with its own listing.</p>
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div id="variantList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#shoppingFeedProduct-form").validate();
+    });
+    function ShowHideNameRButtons(radiobtnVal) {
+    if (radiobtnVal === '@SyncMessages.DEFAULT_TITLE_SYNCTYPE_NAME') {
+        $('#NameMain').show();
+        $('#SEName').hide();
+        $('#CustomName').hide();
+        $('#cust_name_req').hide();
+        $("#CustomName").rules("remove", "required");
+    }
+    if (radiobtnVal === '@SyncMessages.DEFAULT_TITLE_SYNCTYPE_SE_NAME') {
+        $('#SEName').show();
+        $('#NameMain').hide();
+        $('#CustomName').hide();
+        $('#cust_name_req').hide();
+        $("#CustomName").rules("remove", "required");
+    }
+    if (radiobtnVal === '@SyncMessages.DEFAULT_TITLE_SYNCTYPE_CUSTOM_NAME') {
+        $('#CustomName').show();
+        $('#CustomName').focus();
+        $('#NameMain').hide();
+        $('#SEName').hide();
+        $('#cust_name_req').show();
+        $("#CustomName").rules("add", {
+            required: true,
+            messages: {
+                required: "Please provide Product Name",
+            }
+        });
+    }
+    if (radiobtnVal === '@SyncMessages.DEFAULT_DESC_SYNCTYPE_DECSRIPTION') {
+        $('#Description').show();
+        $('#SEDescription').hide();
+        $('#CustomDescription').hide();
+        $('#cust_desc_req').hide();
+        $("#CustomDescription").rules("remove", "required");
+    }
+    if (radiobtnVal === '@SyncMessages.DEFAULT_DESC_SYNCTYPE_SE_DECSRIPTION') {
+        $('#SEDescription').show();
+        $('#Description').hide();
+        $('#CustomDescription').hide();
+        $('#cust_desc_req').hide();
+        $("#CustomDescription").rules("remove", "required");
+    }
+    if (radiobtnVal === '@SyncMessages.DEFAULT_DESC_SYNCTYPE_CUSTOM_DECSRIPTION') {
+        $('#CustomDescription').show();
+        $('#CustomDescription').focus();
+        $('#Description').hide();
+        $('#SEDescription').hide();
+        $('#cust_desc_req').show();
+        $("#CustomDescription").rules("add", {
+            required: true,
+            messages: {
+                required: "Please provide Product Description",
+            }
+        });
+    }
+    $('#CustomName').valid();
+    $('#CustomDescription').valid();
+    $("#shoppingFeedProduct-form").validate();
+}
+</script>
+
+<!-- Modal For Error Display-->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Item Issue(s)</h2>
+            </div>
+            <div class="modal-body" id="modalbodyData">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal For Delete -->
+<div class="modal fade" id="reConfirm" tabindex="-1" role="dialog" aria-labelledby="reConfirmModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Are you sure?</h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No,cancel</button>
+                <button type="button" class="btn btn-primary hide-div" id="commonmodalbtn"
+                        data-request-fselurl="@Url.Action("ChangeFeedSelectionType", "SeurataGoogleShopping")" onclick="ChangeFeedSelectionType(this);">
+                    Change
+                </button>
+                <button type="button" class="btn btn-primary hide-div" id="modalresetbtn"
+                        data-request-url="@Url.Action("ResetFeed", "SeurataGoogleShopping")" onclick="ResetFeed(this);">
+                    <i class="fa fa-undo"></i>Reset
+                </button>
+                <button type="button" class="btn btn-primary hide-div" id="modalpublishbtn"
+                        data-request-url="@Url.Action("PublishFeed", "SeurataGoogleShopping")" onclick="PublishFeed(this);">
+                    <i class="fa fa-cloud-upload"></i>Publish
+                </button>
+                <button type="button" class="btn btn-primary hide-div" id="modalunpublishbtn"
+                        data-request-url="@Url.Action("UnpublishFeed", "SeurataGoogleShopping")" onclick="UnpublishFeed(this);">
+                    <i class="fa fa-eye-slash"></i>Unpublish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

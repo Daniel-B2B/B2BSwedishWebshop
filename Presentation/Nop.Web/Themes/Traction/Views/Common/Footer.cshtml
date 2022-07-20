@@ -1,0 +1,267 @@
+﻿@model FooterModel
+@using Nop.Web.Models.Common;
+@using Nop.Core.Domain.Tax;
+@using Nop.Core.Infrastructure;
+@using Nop.Core;
+@using Nop.Services.Configuration;
+@using Nop.Core.Domain.Tax;
+@using Nop.Core.Domain.Catalog
+
+@{
+    var workingLanguageId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
+
+    var storeId = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+    var removeDesignedBy = EngineContext.Current.Resolve<ISettingService>().GetSettingByKey("tractionthemesettings.removedesignedby", false, storeId, true);
+    var removeCopyright = EngineContext.Current.Resolve<ISettingService>().GetSettingByKey("tractionthemesettings.removecopyright", false, storeId, true);
+}
+
+<div class="footer">
+	<div class="footer-top">
+		<div class="center">
+			@*<div class="footer-rating-wrapper">
+				<div class="footer-block">
+					<div class="rating-box">
+						<div class="ratings five"></div>
+						<div class="date">18 Feb 2019</div>
+						<h4 class="title">Excellent service</h4>
+						<p class="discription">Excellent service, fast, efficient and nice to be able to see a total cost for what you’re ordering on the website.</p>
+						<p class="name">Andrew</p>
+					</div>
+				</div>
+				<div class="footer-block">
+					<div class="rating-box">
+						<div class="ratings five"></div>
+						<div class="date">18 Feb 2019</div>
+						<h4 class="title">Very prompt</h4>
+						<p class="discription">Very prompt, efficient with a good product supplied. Very satisfied . . .</p>
+						<p class="name">Kevin</p>
+					</div>
+				</div>
+				<div class="footer-block">
+					<div class="rating-box">
+						<div class="ratings four"></div>
+						<div class="date">18 Feb 2019</div>
+						<h4 class="title">Good service</h4>
+						<p class="discription">Easy to order, easy to agree on proof, prompt delivery . . .</p>
+						<p class="name">Becky</p>
+					</div>
+				</div>
+				<div class="footer-block">
+					<div class="rating-box">
+						<div class="ratings five"></div>
+						<div class="date">18 Feb 2019</div>
+						<h4 class="title">Once again excellent</h4>
+						<p class="discription">Once again excellent speedy service. Order received within 10 days of enquiry . . .</p>
+						<p class="name">Malcolm</p>
+					</div>
+				</div>
+				<div class="reviews-count">
+					<div>Customer ratings: <strong>8.2 - 234</strong> reviews</div>
+					<div><span class="star"></span>Trustpilot</div>
+				</div>
+			</div>*@
+
+<div class="footer-rating-wrapper">
+
+			<!-- TrustBox widget - Slider --> <div class="trustpilot-widget" data-locale="da-DK" data-template-id="54ad5defc6454f065c28af8b" data-businessunit-id="5c98be5293a1ae00012c03d0" data-style-height="240px" data-style-width="100%" data-theme="light" data-stars="1,2,3,4,5"> <a style="margin-top:20px;" href="https://dk.trustpilot.com/review/b2bpromotion.dk" target="_blank" rel="noopener">Trustpilot</a> </div> <!-- End TrustBox widget -->
+			
+			</div>
+			
+		</div>
+	
+		<div class="footer-notifications-wrapper">
+			<ul>
+				<li class="checkbox"><a href="/tilfredshedsgaranti">@T("Footer.Notifications.Wrapper.Message1")</a></li>
+				<li class="delivery"><a href="/leveringsgaranti">@T("Footer.Notifications.Wrapper.Message2")</a></li>
+				<li class="coin"><a href="/prismatchgaranti">@T("Footer.Notifications.Wrapper.Message3")</a></li>
+			</ul>
+		</div>
+		<div class="footer-carousal-wrapper">
+			<h1 class="title">@T("Manufactures.Title")</h1>
+			@Html.Widget("home_page_manufacturers")
+		</div>
+	</div>
+	<div class="footer-middle">
+        <div class="center">
+            @*@Html.Action("Social", "Common")*@
+            @Html.Action("NewsletterBox", "Newsletter")
+			@* @Html.Action("NewsletterGroupBuyBox", "NewslettergroupBuy")*@
+            @*<ul class="accepted-payment-methods">
+                <li class="method1"></li>
+                <li class="method2"></li>
+                <li class="method3"></li>
+                <li class="method4"></li>
+            </ul>
+			<div class="groupbyform-wrapper">
+				<h4>Sign up to  Group Buy</h4>
+				<p>To unlock the power of Group Buy please fill out the form below</p>
+				<div class="groupbyform">
+					 <form class="navbar-form navbar-left">
+						<input type="text" class="form-control" placeholder="Type email address">
+						<button type="submit" class="btn btn-join">Join Group Buy</button>
+					  </form>
+				</div>
+			</div>*@
+        </div>
+    </div>
+    <div class="footer-upper">
+        <div class="center">
+			@*@Html.Widget("traction_new_products_footer")*@
+			<div class="footer-block">
+                @*@Html.Action("HomePageNews", "News")*@
+				<h4 class="title f-logo"></h4>
+				<ul class="list">
+					<li>B2B Promotion ApS</li>
+					<li>Rødovrevej 151</li>
+                    <li>DK-2610 RødovreS</li>
+					<li>T | +45 69153545</li>
+					<li>CVR 40279695 | 100% danskejet</li>
+				</ul>
+            </div>
+			<div class="footer-block footer-categories">
+               <div class="title">
+                    <strong>@T("Categories")</strong>
+                </div>			
+				@Html.Action("GetAllCategories", "Catalog")
+		    </div>
+			
+            <div class="footer-block links">
+                <div class="title">
+                    <strong>@T("SevenSpikes.Themes.Traction.Common.FooterInformation")</strong>
+                </div>
+                <ul>
+					<li><a href="/blog">@T("Top.Menu.Blog")</a></li>
+                    @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn1).ToList())
+                    {
+                        <li><a href="@Url.RouteUrl("Topic", new { SeName = topic.SeName })">@topic.Name</a></li>
+                    }
+					<li><a href="@Url.RouteUrl("ContactUs")">@T("contactus")</a></li>
+                    @if (Model.SitemapEnabled)
+                    {
+                        <li><a href="@Url.RouteUrl("Sitemap")">@T("Sitemap")</a></li>
+                    }
+                    @if (Model.AllowCustomersToApplyForVendorAccount)
+                    {
+                        <li><a href="@Url.RouteUrl("ApplyVendorAccount")">@T("Vendors.ApplyAccount")</a></li>
+                    }
+                </ul>
+            </div>           
+			<div class="footer-block contacts">
+                <div class="title">
+                    <strong>@T("SevenSpikes.Themes.Traction.Common.FooterContact")</strong>
+                </div>
+                <ul>
+                    <li class="phone"><a href="">@T("SevenSpikes.Themes.Traction.Common.Phone")</a></li>
+					<li class="email"><a href="mailto:@T("SevenSpikes.Themes.Traction.Common.EmailName")@T("SevenSpikes.Themes.Traction.Common.EmailAt")@T("SevenSpikes.Themes.Traction.Common.EmailDomain")">@T("SevenSpikes.Themes.Traction.Common.EmailName")@T("SevenSpikes.Themes.Traction.Common.EmailAt")@T("SevenSpikes.Themes.Traction.Common.EmailDomain")</a></li>
+					<li class="web"><a href="http://www.b2bpromotion.dk/">@T("SevenSpikes.Themes.Traction.Common.Web")</a></li>
+                    <!--<li class="fax">@T("SevenSpikes.Themes.Traction.Common.Fax")</li>
+                    <li class="mobile">@T("SevenSpikes.Themes.Traction.Common.Mobile")</li>
+                    <li class="skype">@T("SevenSpikes.Themes.Traction.Common.Skype")</li>-->
+                </ul>
+				@Html.Action("Social", "Common")
+            </div>
+            
+        </div>
+		
+		@*<div class="center images-wrapper">
+			<div class="footer-block col-lg-offset-6">
+				<img src="~/Themes/Traction/Content/img/designnbuy-logo.png" alt="Designed by">
+			</div>
+			<div class="footer-block">
+				<img src="~/Themes/Traction/Content/img/co-2-neutralwebsite.png" alt="Neutrl website">
+				<img src="~/Themes/Traction/Content/img/fdih-boks-outline.png" alt="FDIH books" width="157">
+			</div>
+		</div>*@
+    </div>
+    <div class="footer-lower">
+        <div class="center">
+			<div class="footer-lower-left-wrapper container">
+				<!--<img src="~/Themes/Traction/Content/img/dibs-checkout-kombo-horizontal.png" alt="Dibs Checkout Kombo Horizontal" />-->
+                <div class="dibs_brand_assets" style="margin: 0px;">
+                    @*<img src="https://cdn.dibspayment.com/logo/checkout/combo/horiz/DIBS_checkout_kombo_horizontal_03.png" alt="DIBS - Payments made easy" />*@
+                    @*<div class="row">
+
+                        <div class="col-md-4">
+                            <p>test</p>
+                            <img style="width:20%;display:block;" src="~/Content/Images/worldline-icon/Mastercard.png" />
+                            <img style="width:20%;display:block;" src="~/Content/Images/worldline-icon/Mobilepay.png" />
+                        </div>
+                        <div class="col-md-4">
+                            <img style="width:20%;display:block;" src="~/content/images/worldline-icon/visa.png" />
+                        </div>
+                    </div>*@
+                    <img src="~/Content/Images/worldline-icon/Worldline_logo.png" />
+					<img src="~/Content/Images/worldline-icon/bd_kortlogodk_64px_62a34d4c8ec01.png" />
+                </div>
+
+			</div>
+			<div class="footer-lower-right-wrapper">
+				<div class="footer-image-wrapper">
+					<a href="https://www.ingenco2.dk/crt/dispcust/c/5285/l/2" style="margin-right:15px;" target="_blank"><img src="~/Themes/Traction/Content/img/co-2-neutralwebsite.png" alt="Neutrl website" width="68" /></a>
+					<img src="~/Themes/Traction/Content/img/fdih-boks-outline.png" alt="FDIH books" width="102" />
+				</div>
+				<div class="footer-disclaimer">
+					<span>@T("Content.CopyrightNotice", DateTime.Now.Year, Model.StoreName)</span>
+					@if (Model.DisplayTaxShippingInfoFooter)
+					{
+						var inclTax = EngineContext.Current.Resolve<IWorkContext>().TaxDisplayType == TaxDisplayType.IncludingTax;
+						<span class="footer-tax-shipping">
+							@T(inclTax ? "Footer.TaxShipping.InclTax" : "Footer.TaxShipping.ExclTax", Url.RouteUrl("Topic", new { SeName = Html.GetTopicSeName("shippinginfo") }))
+						</span>
+					}
+				</div>
+				@if (!removeCopyright)
+				{
+					<div class="footer-powered-by">
+						Powered by <a href="http://www.nopcommerce.com/">nopCommerce</a>
+						@*Would you like to remove the "Powered by nopCommerce" link in the bottom of the footer?
+							Please find more info here http://www.nopcommerce.com/copyrightremoval.aspx*@
+					</div>
+				}
+				@if (!removeDesignedBy)
+				{
+					<div class="footer-designed-by">
+						Designed by <a href="http://www.nop-templates.com/" target="_blank">Nop-Templates.com</a>
+					</div>
+				}
+			</div>
+            <div class="footer-store-theme">
+                @Html.Action("StoreThemeSelector", "Common")
+            </div>
+        </div>
+    </div>
+    @Html.Widget("footer")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var maxHeight = -1;
+
+            $('.footer-block>ul, .footer-block .news-items').each(function () {
+                maxHeight = maxHeight > $(this).height() ? maxHeight : $(this).height();
+            });
+
+            $('.footer-block>ul, .footer-block .news-items').each(function () {
+                $(this).height(maxHeight);
+            });
+			
+        });
+    </script>
+
+</div>
+<!-- Start of LiveChat (www.livechatinc.com) code -->
+<script type="text/javascript">
+window.__lc = window.__lc || {};
+window.__lc.license = 10813682;
+(function() {
+  var lc = document.createElement('script'); lc.type = 'text/javascript'; lc.async = true;
+  lc.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.livechatinc.com/tracking.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(lc, s);
+})();
+</script>
+<noscript>
+<a href="https://www.livechatinc.com/chat-with/10813682/" rel="nofollow">Chat with us</a>,
+powered by <a href="https://www.livechatinc.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a>
+</noscript>
+<!-- End of LiveChat code -->
+
+<script id="CookieConsent" src="https://policy.app.cookieinformation.com/uc.js" data-culture="DA" type="text/javascript"></script>

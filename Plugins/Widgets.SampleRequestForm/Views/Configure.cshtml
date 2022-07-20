@@ -1,0 +1,85 @@
+﻿@{
+    Layout = "";
+}
+@model Nop.Plugin.Widgets.SampleRequestForm.Models.ConfigurationModel
+@using Nop.Core.Infrastructure
+@using Nop.Web.Framework;
+@using Nop.Web.Framework.UI;
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+
+    <script>
+    $(document).ready(function () {
+        bindBootstrapTabSelectEvent('po-connector-edit');
+    });
+    </script>
+    <div class="content-header clearfix">
+        <div class="pull-right">
+            <input type="submit" name="save" class="btn bg-blue" value="@T("Admin.Common.Save")" />
+        </div>
+    </div>
+
+        <div class="content">
+            <div class="form-horizontal">
+                <div id="po-connector-edit" class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        @Html.RenderBootstrapTabHeader("tab-general", @T("Plugins.POWebshop.Connector.Settings.Connection"), true)
+                    </ul>
+                    <div class="tab-content">
+                        @Html.RenderBootstrapTabContent("tab-general", @TabGeneral(), true)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        @helper TabGeneral()
+        {
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @*<div class="form-group">
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.ZoneId)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.ZoneId, Model.AvailableZones)
+                            @Html.ValidationMessageFor(model => model.ZoneId)
+                        </div>
+                    </div>*@
+
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.SampleRequestSendEmail)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(model => model.SampleRequestSendEmail)
+                            @Html.ValidationMessageFor(model => model.SampleRequestSendEmail)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.SampleRequestEmail)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(model => model.SampleRequestEmail)
+                            @Html.ValidationMessageFor(model => model.SampleRequestEmail)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            @Html.NopLabelFor(model => model.EmailSubject)
+                        </div>
+                        <div class="col-md-9">
+                            @Html.NopEditorFor(model => model.EmailSubject)
+                            @Html.ValidationMessageFor(model => model.EmailSubject)
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+}
+}
+

@@ -1,0 +1,58 @@
+﻿@model MiniShoppingCartModel
+@using Nop.Web.Models.ShoppingCart;
+<div id="flyout-cart" class="flyout-cart">
+    <div class="mini-shopping-cart">
+		<div class="flyout-cart-hide"><span class="flyout-hide"></span></div>
+        @*<div class="count">
+            @if (Model.TotalProducts == 0)
+            {
+                @T("ShoppingCart.Mini.NoItems")
+            }
+            else
+            {
+                @Html.Raw(string.Format(T("ShoppingCart.Mini.ItemsText").Text, string.Format("<a href=\"{0}\">{1}</a>", Url.RouteUrl("ShoppingCart"), string.Format(T("ShoppingCart.Mini.Items").Text, Model.TotalProducts))))
+            }
+        </div>*@
+		
+        @if (Model.TotalProducts > 0)
+        {
+			<div><h2>@T("shoppingcart.addedtobasket")</h2></div>
+			
+            <div class="items">
+                @for (int i = 0; i < Model.Items.Count; i++)
+                {
+                    var item = Model.Items[i];
+                    <div class="item @(i == 0 ? "first" : null)">
+                        @if (Model.ShowProductImages)
+                        {
+                            <div class="picture">
+                                <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@item.Picture.Title">
+                                    <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                                </a>
+                            </div>
+                        }
+                        <div class="product">
+                            <div class="name">
+                                <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })">@item.ProductName</a>
+                            </div>
+							<ul>
+								<li class="quantity">@T("ShoppingCart.Quantity") <span>@item.Quantity</span></li>
+								<li class="price"><span>@item.UnitPrice</span></li>
+							</ul>
+                        </div>
+                    </div>
+                }
+            </div>
+			
+            <div class="price-totals">@Html.Action("OrderTotals", "ShoppingCart", new { isEditable = false })</div>
+			
+            <div class="buttons">
+				<button type="button" class="button-1 continue-button">@T("ShoppingCart.ContinueShopping")</button>
+				
+				<a href="/cart" class="button-1 cart-button">@T("ShoppingCart.GotoCartbuttontext")</a>
+            </div>
+
+        }
+
+    </div>
+</div>
