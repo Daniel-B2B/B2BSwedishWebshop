@@ -1,2 +1,2 @@
 DataProvider: sqlserver
-DataConnectionString: Server=20.113.178.69,1433;User Id=andreas;Password=1234Ad; Database=NOP-B2BPROMOTION-DK-DEV-2;Integrated Security=False; Trusted_Connection=false; MultipleActiveResultSets=True
+DataConnectionString: Server=20.113.178.69,1433;User Id=andreas;Password=1234Ad; Database=NOP-B2BPROMOTION-SE-PROD;Integrated Security=False; Trusted_Connection=false; MultipleActiveResultSets=True
